@@ -1,0 +1,50 @@
+<div class="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+  <div class="card p-4 shadow-sm" style="width: 100%; max-width: 400px;">
+    <h3 class="card-title text-center mb-4">Iniciar Sesión</h3>
+
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <div class="mb-3">
+        <label for="mail" class="form-label">Correo Electrónico</label>
+        <input
+          type="email"
+          class="form-control"
+          id="mail"
+          formControlName="mail"
+          placeholder="tu@ejemplo.com"
+          [ngClass]="{'is-invalid': loginForm.get('mail')?.invalid && loginForm.get('mail')?.touched}"
+        >
+        <div *ngIf="loginForm.get('mail')?.invalid && loginForm.get('mail')?.touched" class="invalid-feedback">
+          <div *ngIf="loginForm.get('mail')?.errors?.['required']">El correo electrónico es requerido.</div>
+          <div *ngIf="loginForm.get('mail')?.errors?.['email']">Por favor, introduce un correo electrónico válido.</div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Contraseña</label>
+        <input
+          type="password"
+          class="form-control"
+          id="password"
+          formControlName="password"
+          placeholder="Mínimo 6 caracteres"
+          [ngClass]="{'is-invalid': loginForm.get('password')?.invalid && loginForm.get('password')?.touched}"
+        >
+        <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="invalid-feedback">
+          <div *ngIf="loginForm.get('password')?.errors?.['required']">La contraseña es requerida.</div>
+          <div *ngIf="loginForm.get('password')?.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</div>
+        </div>
+      </div>
+
+      <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">
+          Iniciar Sesión
+        </button>
+      </div>
+
+      <div class="text-center mt-3">
+        <p>¿No tienes cuenta? <a routerLink="/registro">Regístrate aquí</a></p>
+        <p><a href="#">¿Olvidaste tu contraseña?</a></p>
+      </div>
+    </form>
+  </div>
+</div>

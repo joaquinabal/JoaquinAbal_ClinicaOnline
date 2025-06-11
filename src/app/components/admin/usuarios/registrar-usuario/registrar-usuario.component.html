@@ -1,0 +1,10 @@
+<h2>Registrar nuevo usuario</h2>
+<div class="btn-group mb-3">
+  <button class="btn btn-outline-primary" (click)="opcion = 'paciente'">Paciente</button>
+  <button class="btn btn-outline-primary" (click)="opcion = 'especialista'">Especialista</button>
+  <button class="btn btn-outline-primary" (click)="opcion = 'administrador'">Administrador</button>
+</div>
+
+<app-registro-paciente *ngIf="opcion === 'paciente'" [registradoPorAdmin]="true"></app-registro-paciente>
+<app-registro-especialista-admin *ngIf="opcion === 'especialista'" [registradoPorAdmin]="true"></app-registro-especialista-admin>
+<app-registro-administrador *ngIf="opcion === 'administrador'"></app-registro-administrador>

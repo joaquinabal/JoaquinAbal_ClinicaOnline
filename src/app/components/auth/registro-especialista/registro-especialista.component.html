@@ -1,0 +1,80 @@
+<div class="container">
+  <h2>Registro de Especialista</h2>
+  <form [formGroup]="especialistaForm" (ngSubmit)="registrar()" novalidate>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label>Nombre</label>
+        <input type="text" class="form-control" formControlName="nombre"
+               [ngClass]="{'is-invalid': especialistaForm.get('nombre')?.invalid && especialistaForm.get('nombre')?.touched}">
+        <div class="invalid-feedback">Nombre requerido</div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label>Apellido</label>
+        <input type="text" class="form-control" formControlName="apellido"
+               [ngClass]="{'is-invalid': especialistaForm.get('apellido')?.invalid && especialistaForm.get('apellido')?.touched}">
+        <div class="invalid-feedback">Apellido requerido</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label>Edad</label>
+        <input type="number" class="form-control" formControlName="edad"
+               [ngClass]="{'is-invalid': especialistaForm.get('edad')?.invalid && especialistaForm.get('edad')?.touched}">
+        <div class="invalid-feedback">Edad válida requerida</div>
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <label>DNI</label>
+        <input type="text" class="form-control" formControlName="dni"
+               [ngClass]="{'is-invalid': especialistaForm.get('dni')?.invalid && especialistaForm.get('dni')?.touched}">
+        <div class="invalid-feedback">DNI inválido</div>
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <label>Email</label>
+        <input type="email" class="form-control" formControlName="mail"
+               [ngClass]="{'is-invalid': especialistaForm.get('mail')?.invalid && especialistaForm.get('mail')?.touched}">
+        <div class="invalid-feedback">Email inválido</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label>Contraseña</label>
+        <input type="password" class="form-control" formControlName="password"
+               [ngClass]="{'is-invalid': especialistaForm.get('password')?.invalid && especialistaForm.get('password')?.touched}">
+        <div class="invalid-feedback">Mínimo 6 caracteres</div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label>Imagen de perfil</label>
+        <input type="file" class="form-control" (change)="onFileChange($event)">
+      </div>
+    </div>
+
+   <div class="mb-3">
+  <label for="especialidades" class="form-label">Especialidades</label>
+  <select
+    class="form-select"
+    multiple
+    formControlName="especialidades"
+    id="especialidades"
+  >
+    <option *ngFor="let esp of especialidadesDisponibles" [value]="esp">
+      {{ esp }}
+    </option>
+  </select>
+</div>
+
+    <div class="mb-3 d-flex align-items-center gap-2">
+      <input type="text" class="form-control" [formControl]="nuevaEspecialidadControl" placeholder="Agregar nueva especialidad">
+      <button type="button" class="btn btn-outline-secondary" (click)="agregarEspecialidad()">+</button>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Registrarse</button>
+  </form>
+</div>
+    
