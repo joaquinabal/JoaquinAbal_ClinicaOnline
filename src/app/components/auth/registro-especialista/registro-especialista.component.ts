@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { SupabaseService } from '../../../services/supabase.service';
 import { FormBuilder, FormGroup, Validators, FormControl, ReactiveFormsModule, FormsModule } from '@angular/forms';
-
+import { LoadingService } from '../../../services/loading.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-registro-especialista',
   standalone: true,
@@ -17,7 +18,7 @@ especialidadesSeleccionadas: string[] = [];
   nuevaEspecialidadControl = new FormControl('');
   imagenPerfil: File | null = null;
 
-  constructor(private fb: FormBuilder, private supabaseService: SupabaseService) {
+  constructor(private router: Router, private fb: FormBuilder, private supabaseService: SupabaseService, private loadingService: LoadingService) {
     this.especialistaForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(2)]],
       apellido: ['', [Validators.required, Validators.minLength(2)]],
@@ -47,8 +48,9 @@ return;
     alert('La especialidad ya existe.');
     return;
   }
-
+  this.loadingService.mostrar()
   const { error } = await this.supabaseService.agregarEspecialidad(nueva);
+  this.loadingService.ocultar()
   if (error) {
     console.log(error)
     alert('No se pudo agregar la especialidad.');
@@ -93,7 +95,11 @@ return;
   const form = this.especialistaForm.value;
 
   // 1. Crear usuario en Supabase Auth
+  this.loadingService.mostrar();
   const { data, error } = await this.supabaseService.signUpUser(form.mail, form.password, 'especialista');
+  this.loadingService.ocultar();
+        this.router.navigate(['/home']);
+
   if (error) {
     alert('Error en el registro: ' + error.message);
     return;
@@ -124,14 +130,16 @@ return;
     imagen1: imgUrl,
     creado_en: new Date()
   };
-
+    this.loadingService.mostrar();
   const insertRes = await this.supabaseService.insertEspecialista(especialista);
+    this.loadingService.ocultar();
   if (insertRes.error) {
     alert('Error al guardar el perfil: ' + insertRes.error.message);
   } else {
     alert('Registro exitoso. Verificá tu mail y aguardá aprobación del administrador.');
     this.especialistaForm.reset();
   }
+  
 }
 
 

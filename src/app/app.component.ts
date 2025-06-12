@@ -3,6 +3,7 @@ import { RouterOutlet, Router, NavigationStart, NavigationEnd, NavigationCancel,
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { LoadingOverlayComponent } from './components/loading-overlay/loading-overlay.component';
+import { LoadingService } from './services/loading.service';
 
 @Component({
   standalone: true,
@@ -12,11 +13,12 @@ import { LoadingOverlayComponent } from './components/loading-overlay/loading-ov
   styleUrl: './app.component.css'
 })
 export class AppComponent {
+    cargando = false;
     cargandoRuta = false; 
   title = 'clinica-online';
 
-   constructor(private router: Router) {
-    this.router.events.subscribe(event => { 
+   constructor(private router: Router, private loadingService: LoadingService) {
+   /* this.router.events.subscribe(event => { 
       if (event instanceof NavigationStart) {
         this.cargandoRuta = true;
       }
@@ -29,6 +31,10 @@ export class AppComponent {
     this.cargandoRuta = false;
   }, 300);
       }
-    });
+    });*/
+
+        this.loadingService.loading$.subscribe(valor => {
+      this.cargando = valor;
+    }); 
   }
 }

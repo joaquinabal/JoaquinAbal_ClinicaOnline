@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { SupabaseService } from '../../../services/supabase.service';
 import { CommonModule } from '@angular/common';
+import { LoadingService } from '../../../services/loading.service';
 
 @Component({
   selector: 'app-registro-paciente',
@@ -18,7 +19,8 @@ export class RegistroPacienteComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private supabaseService: SupabaseService
+    private supabaseService: SupabaseService,
+    private loadinService: LoadingService
   ) {}
 
   ngOnInit() {
@@ -51,12 +53,11 @@ export class RegistroPacienteComponent implements OnInit {
       return;
     }
 
-    this.cargando = true;
-
     const form = this.pacienteForm.value;
-
+        this.loadinService.mostrar();
     // 1. Crear usuario en Supabase Auth
     const { data, error } = await this.supabaseService.signUpUser(form.mail!, form.password!, 'paciente');
+          this.loadinService.ocultar()
     if (error) {
       alert('Error en el registro: ' + error.message);
       this.cargando = false;
@@ -71,6 +72,7 @@ export class RegistroPacienteComponent implements OnInit {
     }
 
     try {
+  
       // 2. Subir imágenes
      /* const imgUrl1 = await this.supabaseService.uploadImage(
         'usuarios',
@@ -106,13 +108,14 @@ const imgUrl2 = "";
       if (insertRes.error) {
         alert('Error al guardar el perfil: ' + insertRes.error.message);
       } else {
-        alert('Registro exitoso. Verificá tu mail para activar tu cuenta.');
+        
         this.pacienteForm.reset();
       }
     } catch (e: any) {
       alert('Error inesperado: ' + e.message);
+    } finally {
+
     }
 
-    this.cargando = false;
   }
 }

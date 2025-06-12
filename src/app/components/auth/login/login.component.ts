@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router'; // Para la navegación y
 import { SupabaseService } from '../../../services/supabase.service';
 import { ToastrService } from 'ngx-toastr'; // Para las notificaciones
 import { UserRole } from '../../../services/supabase.service';
+import { LoadingService } from '../../../services/loading.service';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -23,7 +24,8 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     private supabaseService: SupabaseService,
     private toastr: ToastrService, // Inyecta el servicio de Toastr
-    private router: Router         // Inyecta el servicio de Router
+    private router: Router,         // Inyecta el servicio de Router
+    private loadingService: LoadingService
   ) {}
 
   ngOnInit() {
@@ -41,11 +43,12 @@ export class LoginComponent implements OnInit {
     }
 
     const { mail, password } = this.loginForm.value;
-
+ 
     try {
       // Intenta iniciar sesión con Supabase
+         this.loadingService.mostrar(); 
       const { data, error } = await this.supabaseService.signInUser(mail, password);
-
+            this.loadingService.ocultar(); 
       if (error) {
         // Manejo de errores específicos de Supabase
         let errorMessage = 'Error al iniciar sesión.';
@@ -59,7 +62,7 @@ export class LoginComponent implements OnInit {
         this.toastr.error(errorMessage, 'Error de Autenticación');
         console.error('Error de login:', error);
         return;
-      }
+      }   
 
       if (data.user) {
         // Usuario logueado con éxito
@@ -131,6 +134,8 @@ export class LoginComponent implements OnInit {
       this.toastr.error(error.message || 'Ocurrió un error inesperado al iniciar sesión.', 'Error General');
       console.error('Error inesperado durante el login:', error);
     }
+
+    
   }
 }
 
