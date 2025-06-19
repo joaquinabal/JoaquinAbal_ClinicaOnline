@@ -4,19 +4,23 @@ import { SupabaseService } from '../../../services/supabase.service';
 import { FormBuilder, FormGroup, Validators, FormControl, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { LoadingService } from '../../../services/loading.service';
 import { Router } from '@angular/router';
+import { RecaptchaModule } from 'ng-recaptcha';
 @Component({
   selector: 'app-registro-especialista',
   standalone: true,
   templateUrl: './registro-especialista.component.html',
   styleUrl: './registro-especialista.component.css',
-  imports: [ReactiveFormsModule, CommonModule, FormsModule],
+  imports: [ReactiveFormsModule, CommonModule, FormsModule, RecaptchaModule],
 })
+
 export class RegistroEspecialistaComponent {
   especialistaForm: FormGroup;
 especialidadesDisponibles: string[] = [];
 especialidadesSeleccionadas: string[] = [];
   nuevaEspecialidadControl = new FormControl('');
   imagenPerfil: File | null = null;
+  captchaResuelto: string | null = null;
+
 
   constructor(private router: Router, private fb: FormBuilder, private supabaseService: SupabaseService, private loadingService: LoadingService) {
     this.especialistaForm = this.fb.group({
@@ -32,8 +36,14 @@ especialidadesSeleccionadas: string[] = [];
   }
 
   async ngOnInit() {
+    this.loadingService.mostrar();
     this.especialidadesDisponibles = await this.supabaseService.getEspecialidades();
+        this.loadingService.ocultar();
   }
+
+  onCaptchaResolved(token: string | null) {
+  this.captchaResuelto = token;
+}
 
 async agregarEspecialidad() {
 
@@ -92,6 +102,11 @@ return;
     return;
   }
 
+    if (!this.captchaResuelto) {
+    alert('Por favor resolvé el captcha.');
+    return;
+  }
+
   const form = this.especialistaForm.value;
 
   // 1. Crear usuario en Supabase Auth
@@ -108,13 +123,12 @@ return;
   const uid = data.user?.id;
 
   // 2. Subir imagen
-  /*
+  
   const imgUrl = await this.supabaseService.uploadImage(
     'usuarios',
     this.imagenPerfil!,
     `especialistas/${uid}.jpg`
-  );*/
-  const imgUrl = "";
+  );
 
 
   // 3. Insertar en tabla 'especialistas'

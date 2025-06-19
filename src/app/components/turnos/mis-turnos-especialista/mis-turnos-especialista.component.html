@@ -1,0 +1,33 @@
+<p>mis-turnos-especialista works!</p>
+<div class="container py-4">
+  <h2 class="text-center mb-4">Mis Turnos (Especialista)</h2>
+
+  <!-- Filtros -->
+  <div class="mb-3">
+    <input type="text" class="form-control mb-2" placeholder="Filtrar por Especialidad" [(ngModel)]="filtroEspecialidad">
+    <input type="text" class="form-control" placeholder="Filtrar por Paciente" [(ngModel)]="filtroPaciente">
+  </div>
+
+  <!-- Listado -->
+  <div *ngFor="let turno of turnosFiltrados()" class="card mb-3 shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">{{ turno.especialidad }} - {{ turno.nombrePaciente }} {{ turno.apellidoPaciente }}</h5>
+      <p class="card-text">
+        <strong>Fecha:</strong> {{ turno.inicio | date:'fullDate' }}<br>
+        <strong>Hora:</strong> {{ turno.inicio | date:'shortTime' }} - {{ turno.fin | date:'shortTime' }}<br>
+        <strong>Estado:</strong> <span [ngClass]="estadoClass(turno.estado)">{{ turno.estado }}</span>
+      </p>
+
+      <!-- Acciones -->
+      <div class="mt-2">
+        <button *ngIf="puedeAceptar(turno.estado)" class="btn btn-success btn-sm me-2" (click)="aceptarTurno(turno)">Aceptar</button>
+        <button *ngIf="puedeRechazar(turno.estado)" class="btn btn-danger btn-sm me-2" (click)="rechazarTurno(turno)">Rechazar</button>
+        <button *ngIf="puedeCancelar(turno.estado)" class="btn btn-warning btn-sm me-2" (click)="cancelarTurno(turno)">Cancelar</button>
+        <button *ngIf="puedeFinalizar(turno.estado)" class="btn btn-primary btn-sm me-2" (click)="finalizarTurno(turno)">Finalizar</button>
+        <button *ngIf="puedeVerResena(turno)" class="btn btn-info btn-sm" (click)="verResena(turno)">Ver Reseña</button>
+      </div>
+    </div>
+  </div>
+
+  <p *ngIf="turnosFiltrados().length === 0" class="text-muted text-center">No se encontraron turnos con los filtros aplicados.</p>
+</div>

@@ -74,7 +74,7 @@ export class RegistroPacienteComponent implements OnInit {
     try {
   
       // 2. Subir imágenes
-     /* const imgUrl1 = await this.supabaseService.uploadImage(
+      const imgUrl1 = await this.supabaseService.uploadImage(
         'usuarios',
         this.imagenPerfil1!,
         `pacientes/${uid}_1.jpg`
@@ -86,10 +86,10 @@ export class RegistroPacienteComponent implements OnInit {
         `pacientes/${uid}_2.jpg`
       );
               console.log("entro2");
-*/
 
+/*
 const imgUrl1 = "";
-const imgUrl2 = "";
+const imgUrl2 = "";*/
       // 3. Insertar en tabla 'pacientes'
       const paciente = {
         id: uid,

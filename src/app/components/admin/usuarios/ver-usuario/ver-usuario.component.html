@@ -1,1 +1,72 @@
-<p>ver-usuario works!</p>
+<div class="container my-4">
+      <h1 class="mb-3">Usuarios</h1>
+  <!-- Pacientes -->    
+  <h3 class="mb-3">Pacientes</h3>
+  <div class="row border-bottom py-2 fw-bold">
+    <div class="col">Foto</div>
+    <div class="col">Nombre</div>
+    <div class="col">Apellido</div>
+    <div class="col">Edad</div>
+    <div class="col">DNI</div>
+    <div class="col">Email</div>
+    <div class="col">Obra Social</div>
+  </div>
+  <div *ngFor="let paciente of pacientes" class="row border-bottom py-2 align-items-center">
+    <div class="col"><img [src]="paciente.imagen1" alt="Foto" class="img-thumbnail" style="width: 50px;"></div>
+    <div class="col">{{ paciente.nombre }}</div>
+    <div class="col">{{ paciente.apellido }}</div>
+    <div class="col">{{ paciente.edad }}</div>
+    <div class="col">{{ paciente.dni }}</div>
+    <div class="col">{{ paciente.mail }}</div>
+    <div class="col">{{ paciente.obra_social }}</div>
+  </div>
+
+  <!-- Especialistas -->
+  <h3 class="mt-5 mb-3">Especialistas</h3>
+  <div class="row border-bottom py-2 fw-bold">
+    <div class="col">Foto</div>
+    <div class="col">Nombre</div>
+    <div class="col">Apellido</div>
+    <div class="col">DNI</div>
+    <div class="col">Edad</div>
+    <div class="col">Email</div>
+    <div class="col">Especialidades</div>
+    <div class="col">Habilitado</div>
+  </div>
+  <div *ngFor="let especialista of especialistas" class="row border-bottom py-2 align-items-center">
+    <div class="col"><img [src]="especialista.imagen1" alt="Foto" class="img-thumbnail" style="width: 50px;"></div>
+    <div class="col">{{ especialista.nombre }}</div>
+    <div class="col">{{ especialista.apellido }}</div>
+    <div class="col">{{ especialista.dni }}</div>
+    <div class="col">{{ especialista.edad }}</div>
+    <div class="col">{{ especialista.mail }}</div>
+    <div *ngFor="let especialidades of especialista.especialidades" class="col">{{especialidades }}</div>
+    <div class="col">
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox"
+               [checked]="especialista.habilitado"
+               (change)="toggleHabilitacion(especialista)">
+      </div>
+    </div>
+  </div>
+
+  <!-- Administradores -->
+  <h3 class="mt-5 mb-3">Administradores</h3>
+  <div class="row border-bottom py-2 fw-bold">
+    <div class="col">Foto</div>
+    <div class="col">Nombre</div>
+    <div class="col">Apellido</div>
+    <div class="col">DNI</div>
+    <div class="col">Edad</div>
+    <div class="col">Email</div>
+  </div>
+  <div *ngFor="let admin of administradores" class="row border-bottom py-2 align-items-center">
+    <div class="col"><img [src]="admin.imagen1" alt="Foto" class="img-thumbnail" style="width: 50px;"></div>
+    <div class="col">{{ admin.nombre }}</div>
+    <div class="col">{{ admin.apellido }}</div>
+    <div class="col">{{ admin.dni }}</div>
+    <div class="col">{{ admin.edad }}</div>
+    <div class="col">{{ admin.mail }}</div>
+  </div>
+
+</div>

@@ -1,0 +1,31 @@
+<div class="container py-4">
+  <h2 class="text-center mb-4">Mis Turnos</h2>
+
+  <!-- Filtros sin combobox -->
+  <div class="mb-3">
+    <input type="text" class="form-control mb-2" placeholder="Filtrar por Especialidad" [(ngModel)]="filtroEspecialidad">
+    <input type="text" class="form-control" placeholder="Filtrar por Especialista" [(ngModel)]="filtroEspecialista">
+  </div>
+
+  <!-- Listado de turnos -->
+  <div *ngFor="let turno of turnosFiltrados()" class="card mb-3 shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">{{ turno.especialidad }} - {{ turno.nombreEspecialista }} {{ turno.apellidoEspecialista }}</h5>
+      <p class="card-text">
+        <strong>Fecha:</strong> {{ turno.inicio | date:'fullDate' }}<br>
+        <strong>Hora:</strong> {{ turno.inicio | date:'shortTime' }} - {{ turno.fin | date:'shortTime' }}<br>
+        <strong>Estado:</strong> <span [ngClass]="estadoClass(turno.estado)">{{ turno.estado }}</span>
+      </p>
+
+      <!-- Acciones según el estado -->
+      <div class="mt-2">
+        <button *ngIf="puedeCancelar(turno.estado)" class="btn btn-danger btn-sm me-2" (click)="cancelarTurno(turno)">Cancelar</button>
+        <button *ngIf="puedeVerResena(turno)" class="btn btn-info btn-sm me-2" (click)="verResena(turno)">Ver Reseña</button>
+        <button *ngIf="puedeCompletarEncuesta(turno)" class="btn btn-success btn-sm me-2" (click)="completarEncuesta(turno)">Completar Encuesta</button>
+        <button *ngIf="puedeCalificar(turno)" class="btn btn-warning btn-sm" (click)="calificarAtencion(turno)">Calificar Atención</button>
+      </div>
+    </div>
+  </div>
+
+  <p *ngIf="turnosFiltrados().length === 0" class="text-muted text-center">No se encontraron turnos con los filtros aplicados.</p>
+</div>

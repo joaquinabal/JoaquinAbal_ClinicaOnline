@@ -1,0 +1,10 @@
+<h2>Panel de Usuarios</h2>
+<div class="btn-group mb-3">
+  <button class="btn btn-outline-primary" (click)="opcion = 'ver'">Ver Usuarios</button>
+  <button class="btn btn-outline-primary" (click)="opcion = 'registrar'">Registrar Usuarios</button>
+
+</div>
+
+<app-registro *ngIf="opcion === 'registrar'"></app-registro>
+<app-ver-usuarios *ngIf="opcion === 'ver'"></app-ver-usuarios>
+    

@@ -74,6 +74,11 @@
       <button type="button" class="btn btn-outline-secondary" (click)="agregarEspecialidad()">+</button>
     </div>
 
+<re-captcha 
+  (resolved)="onCaptchaResolved($event)" 
+  siteKey="6LfEwGYrAAAAAMnpy_qjLJh3ujW4-Mj45YmvsOkK">
+</re-captcha>
+
     <button type="submit" class="btn btn-primary">Registrarse</button>
   </form>
 </div>

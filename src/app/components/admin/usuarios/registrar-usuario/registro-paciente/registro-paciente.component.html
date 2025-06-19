@@ -1,1 +1,76 @@
-<p>registro-paciente works!</p>
+<div class="container mt-4">
+  <h2>Registro de Paciente</h2>
+  <form [formGroup]="pacienteForm" (ngSubmit)="registrar()">
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label>Nombre</label>
+        <input class="form-control" formControlName="nombre">
+        <div class="text-danger" *ngIf="pacienteForm.get('nombre')?.touched && pacienteForm.get('nombre')?.invalid">
+          Campo requerido
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label>Apellido</label>
+        <input class="form-control" formControlName="apellido">
+        <div class="text-danger" *ngIf="pacienteForm.get('apellido')?.touched && pacienteForm.get('apellido')?.invalid">
+          Campo requerido
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label>Edad</label>
+        <input type="number" class="form-control" formControlName="edad">
+        <div class="text-danger" *ngIf="pacienteForm.get('edad')?.touched && pacienteForm.get('edad')?.invalid">
+          Edad requerida y debe ser mayor a 0
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label>DNI</label>
+        <input class="form-control" formControlName="dni">
+        <div class="text-danger" *ngIf="pacienteForm.get('dni')?.touched && pacienteForm.get('dni')?.invalid">
+          Campo requerido
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label>Obra Social</label>
+        <input class="form-control" formControlName="obra_social">
+        <div class="text-danger" *ngIf="pacienteForm.get('obra_social')?.touched && pacienteForm.get('obra_social')?.invalid">
+          Campo requerido
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label>Email</label>
+        <input type="email" class="form-control" formControlName="mail">
+        <div class="text-danger" *ngIf="pacienteForm.get('mail')?.touched && pacienteForm.get('mail')?.invalid">
+          Ingresá un email válido
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label>Contraseña</label>
+        <input type="password" class="form-control" formControlName="password">
+        <div class="text-danger" *ngIf="pacienteForm.get('password')?.touched && pacienteForm.get('password')?.invalid">
+          Contraseña requerida (mínimo 6 caracteres)
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label>Imagen de perfil 1</label>
+        <input type="file" (change)="onImage1Selected($event)" class="form-control">
+      </div>
+      <div class="col-md-6 mb-3">
+        <label>Imagen de perfil 2</label>
+        <input type="file" (change)="onImage2Selected($event)" class="form-control">
+      </div>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Registrarse</button>
+  </form>
+</div>
+

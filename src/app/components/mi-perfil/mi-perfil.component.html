@@ -1,0 +1,22 @@
+<div class="container my-4">
+  <h2 class="mb-4">Mi Perfil</h2>
+
+  <div *ngIf="dataUsuario; else cargando">
+    <ul class="list-group">
+         <div class="col"><img [src]="dataUsuario.imagen1" alt="Foto" class="img-thumbnail" style="width: 50px;"></div>
+      <li class="list-group-item"><strong>Nombre:</strong> {{ dataUsuario.nombre }}</li>
+      <li class="list-group-item"><strong>Apellido:</strong> {{ dataUsuario.apellido }}</li>
+            <li class="list-group-item"><strong>Edad:</strong> {{ dataUsuario.edad }}</li>
+      <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+      <li class="list-group-item"><strong>Rol:</strong> {{ rol | titlecase }}</li>
+    </ul>
+
+    <div *ngIf="rol === 'especialista'" class="mt-4">
+      <a routerLink='mis-horarios' class="btn btn-primary">Mis Horarios</a>
+    </div>
+  </div>
+
+  <ng-template #cargando>
+    <div class="alert alert-info">Cargando perfil...</div>
+  </ng-template>
+</div>

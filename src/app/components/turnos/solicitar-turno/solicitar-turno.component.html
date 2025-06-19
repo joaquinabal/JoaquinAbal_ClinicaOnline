@@ -1,0 +1,48 @@
+<div class="container mt-4">
+  <h2 class="mb-4">Solicitar Turno</h2>
+  <form [formGroup]="form" (ngSubmit)="solicitarTurno()">
+    <!-- ESPECIALIDAD -->
+    <div class="mb-3">
+      <label for="especialidad" class="form-label">Especialidad</label>
+      <select class="form-select" formControlName="especialidad" id="especialidad">
+        <option value="" disabled selected>Seleccione una especialidad</option>
+        <option *ngFor="let esp of especialidades" [value]="esp">{{ esp }}</option>
+      </select>
+    </div>
+
+    <!-- ESPECIALISTA -->
+    <div class="mb-3" *ngIf="especialistas.length > 0">
+      <label for="especialista" class="form-label">Especialista</label>
+      <select class="form-select" formControlName="especialista" id="especialista">
+        <option value="" disabled selected>Seleccione un especialista</option>
+        <option *ngFor="let esp of especialistas" [value]="esp.id">
+          {{ esp.nombre }} {{ esp.apellido }}
+        </option>
+      </select>
+    </div>
+
+    <!-- FECHA -->
+    <div class="mb-3" *ngIf="fechasDisponibles.length > 0">
+      <label for="fecha" class="form-label">Fecha</label>
+      <select class="form-select" formControlName="fecha" id="fecha">
+        <option value="" disabled selected>Seleccione una fecha</option>
+        <option *ngFor="let fecha of fechasDisponibles" [value]="fecha">
+          {{ fecha | date:'fullDate' }}
+        </option>
+      </select>
+    </div>
+
+    <!-- HORARIO -->
+    <div class="mb-3" *ngIf="horariosDisponibles.length > 0">
+      <label for="horario" class="form-label">Horario</label>
+      <select class="form-select" formControlName="horario" id="horario">
+        <option value="" disabled selected>Seleccione un horario</option>
+        <option *ngFor="let h of horariosDisponibles" [ngValue]="h">
+          {{ h.hora_inicio }} a {{ h.hora_fin }}
+        </option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Solicitar Turno</button>
+  </form>
+</div>

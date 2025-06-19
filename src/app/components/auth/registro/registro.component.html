@@ -1,9 +1,13 @@
 <div class="container text-center my-5">
   <h2>¿Cómo quieres registrarte?</h2>
   <p class="lead mb-4">Selecciona el tipo de usuario para continuar con el registro.</p>
-  <div class="d-grid gap-3 col-md-6 mx-auto">
- <button routerLink="paciente" class="btn btn-primary btn-lg">Soy Paciente</button>
-  <button routerLink="especialista" class="btn btn-warning btn-lg">Soy Especialista</button>
+  <div class="d-flex justify-content-center gap-1 col-md-6 mx-auto">
+    <button routerLink="paciente" class="btn p-0 border border-primary">
+      <img src="../../../../assets/pacient.png" alt="Paciente" style="display: block; width: 100%; height: auto;" />
+    </button>
+    <button routerLink="especialista" class="btn p-0 border border-primary">
+      <img src="../../../../assets/doctor.png" alt="Especialista" style="display: block; width: 100%; height: auto;" />
+    </button>
   </div>
-    <router-outlet></router-outlet>
-  </div>
+  <router-outlet></router-outlet>
+</div>

@@ -9,15 +9,28 @@
 
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav ms-auto">
-      <li class="nav-item">
+      <li  class="nav-item">
         <a class="nav-link" routerLink="">Home</a>
       </li>
-      <li class="nav-item">
+      <li *ngIf="user && rol=='paciente'" class="nav-item">
+        <a class="nav-link" routerLink="mis-turnos" routerLinkActive="active">Mis Turnos</a>
+      </li>
+      <li *ngIf="!user || user==undefined" class="nav-item">
         <a class="nav-link" routerLink="login" routerLinkActive="active">Login</a>
       </li>
-      <li class="nav-item">
+      <li *ngIf="!user" class="nav-item">
         <a class="nav-link" routerLink="registro" routerLinkActive="active">Registrarse</a>
       </li>
+       <li *ngIf="user" class="nav-item">
+        <a class="nav-link" routerLink="mi-perfil" routerLinkActive="active">Mi Perfil</a>
+      </li>
+         <li *ngIf="user && rol=='administradore'" class="nav-item">
+        <a class="nav-link" routerLink="usuarios" routerLinkActive="active">Usuarios</a>
+      </li>
+      <li *ngIf="user" class="nav-item">
+        <a class="nav-link" (click)="logout()" routerLink="" routerLinkActive="active">Log Out</a>
+      </li>
+         
     </ul>
   </div>
 </nav>

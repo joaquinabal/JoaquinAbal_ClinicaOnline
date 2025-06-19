@@ -6,6 +6,7 @@ import { SupabaseService } from '../../../services/supabase.service';
 import { ToastrService } from 'ngx-toastr'; // Para las notificaciones
 import { UserRole } from '../../../services/supabase.service';
 import { LoadingService } from '../../../services/loading.service';
+import { Input } from '@angular/core';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -18,7 +19,9 @@ import { LoadingService } from '../../../services/loading.service';
   ]
 })
 export class LoginComponent implements OnInit {
+  @Input() user: any;
   loginForm!: FormGroup;
+  
 
   constructor(
     private fb: FormBuilder,
@@ -137,5 +140,8 @@ export class LoginComponent implements OnInit {
 
     
   }
+  autocompletarCredenciales(mail: string, password: string) {
+  this.loginForm.patchValue({ mail, password });
+}
 }
 

@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   standalone: true,
-  selector: 'app-registro-especialista',
+  selector: 'app-registro',
   imports: [RegistroPacienteComponent, RegistroAdministradorComponent, RegistroEspecialistaComponent, CommonModule],
   templateUrl: './registrar-usuario.component.html',
   styleUrl: './registrar-usuario.component.css'
