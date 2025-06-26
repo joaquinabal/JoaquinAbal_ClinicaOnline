@@ -5,8 +5,8 @@ import { RegistroUsuarioComponent } from './registrar-usuario/registrar-usuario.
 import { UsuariosComponent } from './usuarios.component';
 const routes: Routes = [
   { path: '',  component: UsuariosComponent },
-  { path: 'ver', component: VerUsuarioComponent },
-  { path: 'registrar', component: RegistroUsuarioComponent }
+  { path: 'ver', component: VerUsuarioComponent, data: { animation: 'VerPage'} },
+  { path: 'registrar', component: RegistroUsuarioComponent, data: { animation: 'RegistrarPäge'} }
 ];
 
 @NgModule({

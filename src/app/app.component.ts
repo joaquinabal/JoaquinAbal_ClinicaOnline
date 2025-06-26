@@ -6,13 +6,23 @@ import { LoadingOverlayComponent } from './components/loading-overlay/loading-ov
 import { LoadingService } from './services/loading.service';
 import { SupabaseService } from './services/supabase.service';
 import { supabase } from './supabase/supabaseClient';
+import { trigger, transition, style, animate } from '@angular/animations';
+
 
 @Component({
   standalone: true,
   selector: 'app-root',
   imports: [RouterOutlet, HeaderComponent, FooterComponent, LoadingOverlayComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
+   animations: [
+    trigger('routeAnimations', [
+      transition('* <=> *', [
+        style({ opacity: 0, transform: 'translateY(10px)' }),
+        animate('400ms ease-out', style({ opacity: 1, transform: 'none' }))
+      ])
+    ])
+  ]
 })
 export class AppComponent implements OnInit{
     cargando = false;

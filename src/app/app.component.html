@@ -1,8 +1,8 @@
 <app-header [user]="user"></app-header>
 
-<main class="container my-4">
+<main class="container my-4"  [@routeAnimations]="o?.activatedRouteData?.['animation']">
  
-  <router-outlet></router-outlet>
+  <router-outlet #o="outlet"></router-outlet>
        <app-loading-overlay [mostrar]="cargando"></app-loading-overlay>
 </main>
 

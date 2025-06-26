@@ -3,8 +3,9 @@
 
   <div *ngIf="dataUsuario; else cargando">
     <ul class="list-group">
-         <div class="col"><img [src]="dataUsuario.imagen1" alt="Foto" class="img-thumbnail" style="width: 50px;"></div>
-      <li class="list-group-item"><strong>Nombre:</strong> {{ dataUsuario.nombre }}</li>
+         <div class="col"><img [src]="dataUsuario.imagen1" alt="Foto" class="img-thumbnail" style="width: 150px;"></div>
+        <div class="col"><img [src]="dataUsuario.imagen2" alt="Foto" class="img-thumbnail" style="width: 150px;"></div>
+         <li class="list-group-item"><strong>Nombre:</strong> {{ dataUsuario.nombre }}</li>
       <li class="list-group-item"><strong>Apellido:</strong> {{ dataUsuario.apellido }}</li>
             <li class="list-group-item"><strong>Edad:</strong> {{ dataUsuario.edad }}</li>
       <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
@@ -12,9 +13,31 @@
     </ul>
 
     <div *ngIf="rol === 'especialista'" class="mt-4">
-      <a routerLink='mis-horarios' class="btn btn-primary">Mis Horarios</a>
+      <a routerLink='/mis-horarios' class="btn btn-primary">Mis Horarios</a>
     </div>
   </div>
+
+  <div class="card mt-4">
+  <div class="card-header">Mi Historia Clínica</div>
+  <div class="card-body" *ngIf="historias.length > 0; else sinHistoria">
+    <div *ngFor="let h of historias" class="mb-4 border-bottom pb-2">
+      <div><strong>Turno ID:</strong> {{ h.turno_id }}</div>
+      <div><strong>Altura:</strong> {{ h.altura }} cm</div>
+      <div><strong>Peso:</strong> {{ h.peso }} kg</div>
+      <div><strong>Temperatura:</strong> {{ h.temperatura }} °C</div>
+      <div><strong>Presión:</strong> {{ h.presion }}</div>
+      <div *ngIf="h.adicionales && h.adicionales.length">
+        <strong>Datos adicionales:</strong>
+        <ul>
+          <li *ngFor="let ad of h.adicionales">{{ ad.clave }}: {{ ad.valor }}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <ng-template #sinHistoria>
+    <p class="text-muted">No se encontraron historias clínicas.</p>
+  </ng-template>
+</div>
 
   <ng-template #cargando>
     <div class="alert alert-info">Cargando perfil...</div>

@@ -8,6 +8,7 @@ import { VerUsuarioComponent } from './ver-usuario/ver-usuario.component';
 import { RegistroUsuarioComponent } from './registrar-usuario/registrar-usuario.component';
 import { RegistroPacienteComponent } from './registrar-usuario/registro-paciente/registro-paciente.component';
 import { RegistroEspecialistaComponent } from './registrar-usuario/registro-especialista/registro-especialista.component';
+//import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
 
@@ -30,6 +31,7 @@ import { RegistroEspecialistaComponent } from './registrar-usuario/registro-espe
     RegistroUsuarioComponent,
     RegistroPacienteComponent,
     RegistroEspecialistaComponent,
+    //BrowserAnimationsModule
   ]
 })
 export class UsuariosModule {}

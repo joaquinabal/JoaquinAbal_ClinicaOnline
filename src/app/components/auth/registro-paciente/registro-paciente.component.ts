@@ -3,19 +3,20 @@ import { FormBuilder, Validators, FormGroup, ReactiveFormsModule } from '@angula
 import { SupabaseService } from '../../../services/supabase.service';
 import { CommonModule } from '@angular/common';
 import { LoadingService } from '../../../services/loading.service';
-
+import { RecaptchaModule } from 'ng-recaptcha';
 @Component({
   selector: 'app-registro-paciente',
   standalone: true,
   templateUrl: './registro-paciente.component.html',
   styleUrls: ['./registro-paciente.component.css'],
-  imports: [ReactiveFormsModule, CommonModule]
+  imports: [ReactiveFormsModule, CommonModule, RecaptchaModule]
 })
 export class RegistroPacienteComponent implements OnInit {
   imagenPerfil1: File | null = null;
   imagenPerfil2: File | null = null;
   pacienteForm!: FormGroup;
   cargando = false;
+  captchaResuelto: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -34,6 +35,10 @@ export class RegistroPacienteComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
+
+    onCaptchaResolved(token: string | null) {
+  this.captchaResuelto = token;
+}
 
   onImage1Selected(event: any) {
     this.imagenPerfil1 = event.target.files[0];

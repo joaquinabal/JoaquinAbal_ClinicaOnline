@@ -37,109 +37,92 @@ export class LoginComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
+async login() {
+  if (this.loginForm.invalid) {
+    this.loginForm.markAllAsTouched();
+    this.toastr.warning('Por favor, ingresa tus credenciales.', 'Campos Requeridos');
+    return;
+  }
 
- async login() {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched(); // Marca todos los campos como tocados para mostrar errores
-      this.toastr.warning('Por favor, ingresa tus credenciales.', 'Campos Requeridos');
+  const { mail, password } = this.loginForm.value;
+
+  try {
+    this.loadingService.mostrar();
+    const { data, error } = await this.supabaseService.signInUser(mail, password);
+    this.loadingService.ocultar();
+
+    if (error) {
+      let errorMessage = 'Error al iniciar sesión.';
+      if (error.message.includes('Invalid login credentials')) {
+        errorMessage = 'Credenciales inválidas. Verifica tu correo y contraseña.';
+      } else if (error.message.includes('Email not confirmed')) {
+        errorMessage = 'Correo no confirmado. Revisa tu bandeja de entrada.';
+      } else {
+        errorMessage = error.message;
+      }
+      this.toastr.error(errorMessage, 'Error de Autenticación');
       return;
     }
 
-    const { mail, password } = this.loginForm.value;
- 
-    try {
-      // Intenta iniciar sesión con Supabase
-         this.loadingService.mostrar(); 
-      const { data, error } = await this.supabaseService.signInUser(mail, password);
-            this.loadingService.ocultar(); 
-      if (error) {
-        // Manejo de errores específicos de Supabase
-        let errorMessage = 'Error al iniciar sesión.';
-        if (error.message.includes('Invalid login credentials')) {
-          errorMessage = 'Credenciales inválidas. Verifica tu correo y contraseña.';
-        } else if (error.message.includes('Email not confirmed')) {
-          errorMessage = 'Correo no confirmado. Revisa tu bandeja de entrada.';
-        } else {
-          errorMessage = error.message; // Otro error de Supabase
-        }
-        this.toastr.error(errorMessage, 'Error de Autenticación');
-        console.error('Error de login:', error);
-        return;
-      }   
+    if (data.user) {
+      // --- Obtiene el rol del usuario
+      const userRole: UserRole | undefined = data.user.user_metadata?.['rol'] as UserRole;
 
-      if (data.user) {
-        // Usuario logueado con éxito
-        this.toastr.success('¡Sesión iniciada con éxito!', 'Bienvenido');
-        console.log('Usuario logueado:', data.user);
+      if (userRole) {
+        let isSpecialistEnabled = true;
+        if (userRole === 'especialista') {
+          const { data: specialistData, error: specialistError } = await this.supabaseService.getSpecialistProfile(data.user.id);
 
-        // --- INICIO DE LA MODIFICACIÓN CLAVE PARA METADATA Y ROLES ---
-
-        // 1. Obtener el rol del usuario directamente de la user_metadata
-        // Asegúrate de que 'rol' se haya guardado durante el registro en options.data.rol
-        const userRole: UserRole | undefined = data.user.user_metadata?.['rol'] as UserRole;
-
-        if (userRole) { // Si el rol está definido en la metadata
-          let isSpecialistEnabled = true; // Bandera para controlar la habilitación del especialista
-
-          // 2. Si el rol es 'especialista', hacemos una consulta adicional para verificar 'habilitado'
-          if (userRole === 'especialista') {
-            const { data: specialistData, error: specialistError } = await this.supabaseService.getSpecialistProfile(data.user.id);
-
-            if (specialistError) {
-              console.error('Error al obtener el perfil de especialista:', specialistError);
-              isSpecialistEnabled = false; // Asumimos no habilitado si hay error al obtener el perfil
-            } else if (!specialistData) {
-                // Esto ocurriría si .single() no encuentra el registro, o si el especialista fue eliminado de la tabla 'especialistas'
-                console.warn('Perfil de especialista no encontrado en la tabla "especialistas" para el UID:', data.user.id);
-                isSpecialistEnabled = false; // No hay datos de especialista, por lo tanto no está habilitado
-            } else {
-              // Si se encontró el perfil, usamos su valor de 'habilitado'
-              isSpecialistEnabled = specialistData.habilitado;
+          if (specialistError || !specialistData) {
+            this.toastr.info('Tu cuenta de especialista aún no ha sido habilitada por un administrador.', 'Cuenta Pendiente');
+            await this.supabaseService.signOutUser();
+            this.router.navigate(['/login']);
+            return; // 👈 ACÁ CORTA Y NO MUESTRA EL TOAST DE ÉXITO
+          } else {
+            isSpecialistEnabled = specialistData.habilitado;
+            if (!isSpecialistEnabled) {
+              this.toastr.info('Tu cuenta de especialista aún no ha sido habilitada por un administrador.', 'Cuenta Pendiente');
+              await this.supabaseService.signOutUser();
+              this.router.navigate(['/login']);
+              return;
             }
           }
-
-          // 3. Redirigir según el rol y la habilitación (para especialistas)
-          switch (userRole) {
-            case 'administrador':
-              this.router.navigate(['/admin/dashboard']); // Ruta para administradores
-              break;
-            case 'paciente':
-              this.router.navigate(['/paciente/dashboard']); // Ruta para pacientes
-              break;
-            case 'especialista':
-              if (isSpecialistEnabled) { // Verifica si el especialista está habilitado
-                this.router.navigate(['/especialista/dashboard']); // Ruta para especialistas habilitados
-              } else {
-                this.toastr.info('Tu cuenta de especialista aún no ha sido habilitada por un administrador.', 'Cuenta Pendiente');
-                await this.supabaseService.signOutUser(); // Cerrar sesión si no está habilitado
-                this.router.navigate(['/login']); // O a una página de "espera de activación"
-              }
-              break;
-            default:
-              this.toastr.warning('Rol de usuario no reconocido en metadata. Redirigiendo a Home.', 'Rol Desconocido');
-              this.router.navigate(['/']); // Ruta por defecto si el rol no se reconoce
-              break;
-          }
-        } else {
-          // Si el rol no se encontró en la metadata (posiblemente un usuario antiguo o un error de registro)
-          this.toastr.warning('No se encontró el rol del usuario en su perfil. Redirigiendo a Home.', 'Perfil Incompleto');
-          this.router.navigate(['/']); // Redirigir si no hay rol
         }
 
-        // --- FIN DE LA MODIFICACIÓN CLAVE ---
-
+        // Solo si pasó los chequeos y NO entró en ningún return anterior:
+        switch (userRole) {
+          case 'administrador':
+            this.toastr.success('¡Sesión iniciada con éxito!', 'Bienvenido');
+            this.router.navigate(['/admin/dashboard']);
+            break;
+          case 'paciente':
+            this.toastr.success('¡Sesión iniciada con éxito!', 'Bienvenido');
+            this.router.navigate(['/paciente/dashboard']);
+            break;
+          case 'especialista':
+            this.toastr.success('¡Sesión iniciada con éxito!', 'Bienvenido');
+            this.router.navigate(['/especialista/dashboard']);
+            break;
+          default:
+            this.toastr.warning('Rol de usuario no reconocido en metadata. Redirigiendo a Home.', 'Rol Desconocido');
+            this.router.navigate(['/']);
+            break;
+        }
       } else {
-        this.toastr.error('No se pudo iniciar sesión. Intenta nuevamente.', 'Error Desconocido');
+        this.toastr.warning('No se encontró el rol del usuario en su perfil. Redirigiendo a Home.', 'Perfil Incompleto');
+        this.router.navigate(['/']);
       }
 
-    } catch (error: any) {
-      // Manejo de otros errores no capturados por Supabase (ej. red, etc.)
-      this.toastr.error(error.message || 'Ocurrió un error inesperado al iniciar sesión.', 'Error General');
-      console.error('Error inesperado durante el login:', error);
+    } else {
+      this.toastr.error('No se pudo iniciar sesión. Intenta nuevamente.', 'Error Desconocido');
     }
 
-    
+  } catch (error: any) {
+    this.toastr.error(error.message || 'Ocurrió un error inesperado al iniciar sesión.', 'Error General');
+    console.error('Error inesperado durante el login:', error);
   }
+}
+
   autocompletarCredenciales(mail: string, password: string) {
   this.loginForm.patchValue({ mail, password });
 }

@@ -1,11 +1,10 @@
 <div class="container py-4">
   <h2 class="text-center mb-4">Mis Turnos</h2>
 
-  <!-- Filtros sin combobox -->
+  <!-- Filtros -->
   <div class="mb-3">
-    <input type="text" class="form-control mb-2" placeholder="Filtrar por Especialidad" [(ngModel)]="filtroEspecialidad">
-    <input type="text" class="form-control" placeholder="Filtrar por Especialista" [(ngModel)]="filtroEspecialista">
-  </div>
+    <input type="text" class="form-control mb-2" placeholder="Buscar por cualquier campo (ej: altura: 80)" [(ngModel)]="filtroTurno">
+ </div>
 
   <!-- Listado de turnos -->
   <div *ngFor="let turno of turnosFiltrados()" class="card mb-3 shadow-sm">
@@ -17,15 +16,52 @@
         <strong>Estado:</strong> <span [ngClass]="estadoClass(turno.estado)">{{ turno.estado }}</span>
       </p>
 
-      <!-- Acciones según el estado -->
-      <div class="mt-2">
-        <button *ngIf="puedeCancelar(turno.estado)" class="btn btn-danger btn-sm me-2" (click)="cancelarTurno(turno)">Cancelar</button>
-        <button *ngIf="puedeVerResena(turno)" class="btn btn-info btn-sm me-2" (click)="verResena(turno)">Ver Reseña</button>
-        <button *ngIf="puedeCompletarEncuesta(turno)" class="btn btn-success btn-sm me-2" (click)="completarEncuesta(turno)">Completar Encuesta</button>
-        <button *ngIf="puedeCalificar(turno)" class="btn btn-warning btn-sm" (click)="calificarAtencion(turno)">Calificar Atención</button>
+      <!-- Ver Reseña -->
+      <button *ngIf="puedeVerResena(turno)" class="btn btn-info btn-sm me-2" (click)="verResena(turno)">
+        Ver Reseña
+      </button>
+      <div *ngIf="abierto[turno.id] === 'resena'" class="mt-2">
+        <div class="alert alert-info">
+          <strong>Reseña:</strong> {{ turno.resena }}
+          <button class="btn btn-sm btn-secondary ms-3" (click)="cerrarResena(turno)">Cerrar</button>
+        </div>
+      </div>
+
+      <!-- Calificar Atención -->
+      <button *ngIf="puedeCalificar(turno)" class="btn btn-success btn-sm me-2" (click)="abrirCalificacion(turno)">
+        Calificar Atención
+      </button>
+      <span *ngIf="turno.calificacion" class="badge bg-success ms-2">
+        Calificado: {{ turno.calificacion }} ⭐
+      </span>
+
+      <!-- Completar Encuesta -->
+      <button class="btn btn-primary btn-sm me-2" [disabled]="true">
+        Completar Encuesta (Próximamente)
+      </button>
+
+      <!-- Formulario de Calificación -->
+      <div *ngIf="abierto[turno.id] === 'calificacion'" class="mt-3">
+        <div class="mb-2">
+          <label>Puntaje:</label>
+          <select [(ngModel)]="calificacion[turno.id]" class="form-select w-auto d-inline-block">
+            <option *ngFor="let n of [1,2,3,4,5]" [value]="n">{{ n }} ⭐</option>
+          </select>
+        </div>
+        <div class="mb-2">
+          <label>Comentario:</label>
+          <textarea [(ngModel)]="comentario[turno.id]" rows="2" class="form-control"></textarea>
+        </div>
+        <button class="btn btn-success btn-sm" (click)="enviarCalificacion(turno)">Enviar</button>
+        <button class="btn btn-secondary btn-sm ms-2" (click)="cancelarCalificacion(turno)">Cancelar</button>
+        <div *ngIf="mensaje[turno.id]" class="text-success mt-2">{{ mensaje[turno.id] }}</div>
       </div>
     </div>
   </div>
 
   <p *ngIf="turnosFiltrados().length === 0" class="text-muted text-center">No se encontraron turnos con los filtros aplicados.</p>
+
+    <button  class="btn btn-success btn-sm me-2" routerLink="/solicitar-turno">
+        Solicitar Turno
+      </button>
 </div>

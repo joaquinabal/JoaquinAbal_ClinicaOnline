@@ -54,7 +54,7 @@ async obtenerEspecialidades(): Promise<string[]> {
 }
 
 async obtenerEspecialistas(): Promise<any[]> {
-  const { data } = await supabase.from('especialistas').select('id, nombre, apellido, especialidad');
+  const { data } = await supabase.from('especialistas').select('id, nombre, apellido, especialidades');
   return data || [];
 }
 
@@ -123,9 +123,8 @@ async chequearDisponibilidad(disponibilidad: any) {
 async obtenerPacientes() {
   const { data, error } = await supabase
     .from('pacientes')
-    .select('id, nombre, apellido, dni, email')
-    .eq('activo', true); // opcional, si querés filtrar solo activos
-
+    .select('id, nombre, apellido, dni, mail, imagen1')
+    
   if (error) {
     console.error('Error al obtener pacientes:', error.message);
     return [];
@@ -419,7 +418,7 @@ async agregarEspecialidad(nueva: string): Promise<{ error: any | null }> {
 
   
   
-async getEspecialidades(): Promise<string[]> {
+async   getEspecialidades(): Promise<string[]> {
   const { data, error } = await supabase
     .from('especialidades')
     .select('nombre')
@@ -458,6 +457,148 @@ async getEspecialidades(): Promise<string[]> {
       .eq('id', id);
   }
 
+async agregarHistoriaClinica(historia: {
+  paciente_id: string;
+  especialista_id: string;  
+  turno_id: string;
+  altura: number;
+  peso: number;
+  temperatura: number;
+  presion: string;
+  adicionales: { clave: string, valor: string }[];
+}) {
+  const { error } = await supabase
+    .from('historia_clinica')
+    .insert([
+      {
+        ...historia,
+        adicionales: historia.adicionales.length > 0 ? historia.adicionales : null
+      }
+    ]);
+  return !error;
+}
+  // Crea la historia clínica y la asocia al turno
+async cargarHistoriaClinica(turno: any, historia: any) {
+  // turno debe tener id, paciente_id, especialista_id
+  console.log(turno)
+  const { data, error } = await supabase
+    .from('historia_clinica')
+    .insert([{
+      turno_id: turno.id,
+      paciente_id: turno.paciente_id,
+      especialista_id: turno.especialista_id,
+      altura: historia.altura,
+      peso: historia.peso,
+      temperatura: historia.temperatura,
+      presion: historia.presion,
+      adicionales: historia.adicionales // array de objetos clave/valor
+    }])
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error al guardar historia clínica:', error.message);
+    return null;
+  }
+  return data;
+}
+
+async tieneHistoriaClinica(turnoId: string): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('historias_clinicas')
+    .select('id')
+    .eq('turno_id', turnoId)
+    .maybeSingle();
+
+  return !!data && !error;
+}
+
+async getHistoriasClinicasPorPaciente(pacienteId: string) {
+  const { data, error } = await supabase
+    .from('historia_clinica')
+    .select('*')
+    .eq('paciente_id', pacienteId)
+    .order('turno_id', { ascending: false });
+  if (error) {
+    console.error('Error al obtener historias clínicas:', error.message);
+    return [];
+  }
+  return data;
+}
+
+async getHistoriasClinicasAtendidosPorEspecialista(especialistaId: string) {
+  const { data, error } = await supabase
+    .from('historia_clinica')
+    .select(`
+      *,
+      pacientes:paciente_id (
+        nombre,
+        apellido
+      )
+    `)
+    .eq('especialista_id', especialistaId)
+    .order('creado_en', { ascending: false });
+
+  if (error) {
+    console.error('Error al obtener historias clínicas de pacientes atendidos:', error.message);
+    return [];
+  }
+  return data;
+}
+
+async getHistoriasClinicasPorTurnos(turnoIds: string[]): Promise<any[]> {
+  if (!turnoIds.length) return [];
+  const { data, error } = await supabase
+    .from('historia_clinica')
+    .select('*')
+    .in('turno_id', turnoIds);
+  if (error) {
+    console.error('Error obteniendo historias clínicas:', error.message);
+    return [];
+  }
+  return data;
+} 
+
+async getHistoriasDePacienteClinicasPorTurnos(turnoIds: string[]): Promise<{ [turnoId: string]: any }> {
+  if (!turnoIds.length) return {};
+  const { data, error } = await supabase
+    .from('historia_clinica')
+    .select('*')
+    .in('turno_id', turnoIds);
+
+  if (error) {
+    console.error('Error obteniendo historias clínicas:', error);
+    return {};
+  }
+  // Mapa turno_id -> historia
+  const map: { [turnoId: string]: any } = {};
+  (data || []).forEach(hc => map[hc.turno_id] = hc);
+  return map;
+}
+
+// SupabaseService
+async getTodasHistoriasClinicas() {
+  const { data, error } = await supabase
+    .from('historia_clinica')
+    .select(`
+      *,
+      pacientes:paciente_id (
+        nombre,
+        apellido
+      ),
+      especialistas:especialista_id (
+        nombre,
+        apellido
+      )
+    `)
+    .order('creado_en', { ascending: false });
+
+  if (error) {
+    console.error('Error al obtener todas las historias clínicas:', error.message);
+    return [];
+  }
+  return data;
+}
 
 
   // TURNOS
@@ -609,6 +750,157 @@ async finalizarTurno(turnoId: string, resena: string) {
   if (error) throw error;
 }
 
+// Trae todos los especialistas con imagen y sus especialidades
+async getEspecialistasConImagen() {
+  const { data, error } = await supabase
+    .from('especialistas')
+    .select('id, nombre, apellido, imagen1, especialidades'); // suponiendo que especialidades es array
 
+  if (error) {
+    console.error(error);
+    return [];
+  }
+
+  // Si especialidades es string separado por coma
+  return data.map(e => ({
+    ...e,
+    especialidades: Array.isArray(e.especialidades)
+      ? e.especialidades
+      : (e.especialidades || '').split(',').map((x: string) => x.trim())
+  }));
+}
+
+// Trae bloques de 30 min disponibles para ese especialista y especialidad en los próximos 15 días
+async getTurnosDisponibles(especialistaId: string, especialidad: string) {
+  // Trae disponibilidades activas para esa especialidad
+  const { data: disponibilidades, error: errDisp } = await supabase
+    .from('disponibilidades')
+    .select('*')
+    .eq('especialista_id', especialistaId)
+    .eq('especialidad', especialidad)
+    .eq('activa', true);
+
+  if (errDisp) return [];
+
+  // Busca turnos ya tomados
+  const turnosDisponibles: any[] = [];
+  const hoy = new Date();
+  for (let i = 0; i < 15; i++) {
+    const fecha = new Date(hoy);
+    fecha.setDate(hoy.getDate() + i);
+    const yyyy_mm_dd = fecha.toISOString().split('T')[0];
+    const diaSemana = fecha.toLocaleDateString('es-AR', { weekday: 'long' });
+
+    // Filtro las disponibilidades de ese día
+    const disponiblesHoy = disponibilidades.filter(d => {
+      // Supone que en la DB los días están como "Lunes", "Martes"...
+      return (d.dia_semana || '').toLowerCase() === diaSemana.toLowerCase();
+    });
+    if (disponiblesHoy.length === 0) continue;
+
+    // Turnos ya reservados ese día
+    const { data: turnosTomados, error: errTurnos } = await supabase
+      .from('turnos')
+      .select('inicio')
+      .eq('especialista_id', especialistaId)
+      .eq('especialidad', especialidad)
+      .gte('inicio', `${yyyy_mm_dd}T00:00`)
+      .lte('inicio', `${yyyy_mm_dd}T23:59`);
+
+    const ocupados = (turnosTomados || []).map(t => t.inicio?.substring(11, 16)); // "HH:mm"
+
+    // Para cada franja disponible, genero los bloques de 30 minutos
+    for (let disp of disponiblesHoy) {
+      let [h, m] = disp.hora_inicio.split(':').map(Number);
+      const [hFin, mFin] = disp.hora_fin.split(':').map(Number);
+
+      while (h < hFin || (h === hFin && m < mFin)) {
+        const inicio = `${yyyy_mm_dd} ${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+        m += 30;
+        if (m >= 60) {
+          h++;
+          m -= 60;
+        }
+        const fin = `${yyyy_mm_dd} ${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+        // Si ya está tomado no lo muestro
+        if (!ocupados.includes(inicio.substring(11, 16))) {
+          turnosDisponibles.push({ inicio, fin });
+        }
+      }
+    }
+  }
+  return turnosDisponibles;
+}
+
+// Trae todos los turnos, con JOIN para traer nombre de paciente/especialista (ajusta a tus columnas reales)
+async getTurnosAdmin() {
+  const { data, error } = await supabase
+    .from('turnos')
+    .select(`
+      id, especialidad, inicio, fin, estado,
+      especialista_id, paciente_id,
+      especialistas (nombre, apellido),
+      pacientes (nombre, apellido)
+    `)
+    .order('inicio', { ascending: true });
+
+  if (error) {
+    console.error('Error obteniendo turnos:', error);
+    return [];
+  }
+
+  // Mapea a formato amigable
+  return (data || []).map((t: any) => ({
+    ...t,
+    especialista_nombre: t.especialistas ? `${t.especialistas.nombre} ${t.especialistas.apellido}` : '',
+    paciente_nombre: t.pacientes ? `${t.pacientes.nombre} ${t.pacientes.apellido}` : ''
+  }));
+}
+
+// Cancela turno como admin (actualiza estado y guarda comentario)
+async cancelarTurnoAdmin(turnoId: string, comentario: string) {
+  const { error } = await supabase
+    .from('turnos')
+    .update({ estado: 'Cancelado', comentario_cancelacion: comentario })
+    .eq('id', turnoId);
+
+  if (error) {
+    console.error('Error al cancelar turno:', error);
+  }
+  return !error;
+}
+
+
+// Para completar encuesta
+async completarEncuestaTurno(turnoId: string, comentario: string) {
+  return await supabase
+    .from('turnos')
+    .update({ encuesta_completada: true, comentario_encuesta: comentario })
+    .eq('id', turnoId);
+}
+
+// Para calificar atención
+async calificarAtencionTurno(turnoId: string, comentario: string) {
+  return await supabase
+    .from('turnos')
+    .update({ calificacion: comentario })
+    .eq('id', turnoId);
+}
+
+async calificarAtencion(turnoId: string, puntaje: number, comentario: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('turnos')
+    .update({
+      calificacion: puntaje,
+      comentario_calificacion: comentario
+    })
+    .eq('id', turnoId);
+
+  if (error) {
+    console.error('Error al calificar atención:', error.message);
+    return false;
+  }
+  return true;
+}
 
 } 

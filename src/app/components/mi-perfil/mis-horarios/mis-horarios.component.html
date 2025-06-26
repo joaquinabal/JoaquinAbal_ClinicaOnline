@@ -5,7 +5,7 @@
   <div class="mb-3">
     <label class="form-label">Especialidad</label>
     <select [(ngModel)]="especialidadSeleccionada" class="form-select">
-      <option [ngValue]="null" disabled>Seleccione una especialidad</option>
+      <option [ngValue]="null" disabled selected>Seleccione una especialidad</option>
       <option *ngFor="let esp of especialidades" [value]="esp">{{ esp }}</option>
     </select>
   </div>
@@ -14,38 +14,44 @@
   <div class="mb-3">
     <label class="form-label">Día</label>
     <select [(ngModel)]="diaSeleccionado" class="form-select">
-      <option [ngValue]="null" disabled>Seleccione un día</option>
+      <option [ngValue]="null" disabled selected>Seleccione un día</option>
       <option *ngFor="let dia of diasSemana" [value]="dia">{{ dia }}</option>
     </select>
   </div>
 
-  <!-- Horarios -->
-    <div class="mb-3">
-  <label for="horario" class="form-label">Horario (20 min)</label>
-  <select id="horario" class="form-select" [(ngModel)]="horarioSeleccionado" required>
-    <option [ngValue]="null" disabled selected>Seleccione un horario</option>
-    <option *ngFor="let bloque of bloquesHorario" [ngValue]="bloque">
-      {{ bloque.hora_inicio }} - {{ bloque.hora_fin }}
-    </option>
-  </select>
-</div>
+  <!-- Selección de horario de inicio -->
+  <div class="mb-3">
+    <label class="form-label">Hora inicio</label>
+    <select [(ngModel)]="horaInicioSeleccionada" class="form-select">
+      <option [ngValue]="null" disabled selected>Hora de inicio</option>
+      <option *ngFor="let hora of horarios" [value]="hora">{{ hora }}</option>
+    </select>
+  </div>
+  
+  <!-- Selección de horario de fin -->
+  <div class="mb-3">
+    <label class="form-label">Hora fin</label>
+    <select [(ngModel)]="horaFinSeleccionada" class="form-select">
+      <option [ngValue]="null" disabled selected>Hora de fin</option>
+      <option *ngFor="let hora of horarios" [value]="hora">{{ hora }}</option>
+    </select>
+  </div>
 
   <button class="btn btn-primary" (click)="guardarDisponibilidad()">Guardar Disponibilidad</button>
 </div>
 
+<div *ngIf="disponibilidades.length > 0">
+  <h5>Disponibilidades Actuales</h5>
+  <ul class="list-group">
+    <li *ngFor="let d of disponibilidades" class="list-group-item d-flex justify-content-between">
+      <span>
+        <strong>{{ d.especialidad }}</strong> - {{ d.dia_semana }} de {{ d.hora_inicio }} a {{ d.hora_fin }}
+      </span>
+      <button class="btn btn-sm btn-danger" (click)="eliminarDisponibilidad(d.id)">Eliminar</button>
+    </li>
+  </ul>
+</div>
 
-  <div *ngIf="disponibilidades.length > 0">
-    <h5>Disponibilidades Actuales</h5>
-    <ul class="list-group">
-      <li *ngFor="let d of disponibilidades" class="list-group-item d-flex justify-content-between">
-        <span>
-          <strong>{{ d.especialidad }}</strong> - {{ d.dia_semana }} de {{ d.hora_inicio }} a {{ d.hora_fin }}
-        </span>
-        <button class="btn btn-sm btn-danger" (click)="eliminarDisponibilidad(d.id)">Eliminar</button>
-      </li>
-    </ul>
-  </div>
-
-  <div *ngIf="disponibilidades.length === 0" class="alert alert-warning mt-3">
-    No hay disponibilidades cargadas.
-  </div>
+<div *ngIf="disponibilidades.length === 0" class="alert alert-warning mt-3">
+  No hay disponibilidades cargadas.
+</div>

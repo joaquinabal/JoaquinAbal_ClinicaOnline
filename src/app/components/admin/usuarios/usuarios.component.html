@@ -2,9 +2,11 @@
 <div class="btn-group mb-3">
   <button class="btn btn-outline-primary" (click)="opcion = 'ver'">Ver Usuarios</button>
   <button class="btn btn-outline-primary" (click)="opcion = 'registrar'">Registrar Usuarios</button>
-
+  <button class="btn btn-outline-primary" (click)="opcion = 'historia-clinica'">Ver Historias Clínicas</button>
 </div>
 
-<app-registro *ngIf="opcion === 'registrar'"></app-registro>
-<app-ver-usuarios *ngIf="opcion === 'ver'"></app-ver-usuarios>
-    
+
+  <app-registro *ngIf="opcion === 'registrar'" @fadeInOut></app-registro>
+  <app-ver-usuarios *ngIf="opcion === 'ver'" @fadeInOut></app-ver-usuarios>
+  <app-historias-clinicas-admin *ngIf="opcion === 'historia-clinica'" @fadeInOut></app-historias-clinicas-admin>
+

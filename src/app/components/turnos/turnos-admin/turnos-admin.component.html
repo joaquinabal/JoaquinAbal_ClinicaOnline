@@ -1,0 +1,100 @@
+<div class="container py-4">
+  <h2 class="mb-4 text-center">Gestión de Turnos (Administrador)</h2>
+
+      <button  class="btn btn-success btn-sm me-2" routerLink="solicitar">
+        Solicitar Turno
+      </button>
+  <div class="mb-3 d-flex flex-wrap gap-2">
+    <span class="fw-bold align-self-center">Filtrar por especialidad:</span>
+    <button 
+      *ngFor="let esp of especialidades" 
+      class="btn btn-sm" 
+      [ngClass]="{'btn-primary': filtroEspecialidad === esp, 'btn-outline-primary': filtroEspecialidad !== esp}" 
+      (click)="filtroEspecialidad = (filtroEspecialidad === esp ? null : esp)">
+      {{ esp }}
+    </button>
+    <button class="btn btn-link btn-sm" (click)="filtroEspecialidad = null">Todas</button>
+  </div>
+  <div class="mb-3 d-flex flex-wrap gap-2">
+    <span class="fw-bold align-self-center">Filtrar por especialista:</span>
+    <button 
+      *ngFor="let e of especialistas" 
+      class="btn btn-sm" 
+      [ngClass]="{'btn-success': filtroEspecialistaId === e.id, 'btn-outline-success': filtroEspecialistaId !== e.id}" 
+      (click)="filtroEspecialistaId = (filtroEspecialistaId === e.id ? null : e.id)">
+      {{ e.nombre }} {{ e.apellido }}
+    </button>
+    <button class="btn btn-link btn-sm" (click)="filtroEspecialistaId = null">Todos</button>
+  </div>
+
+  <div *ngIf="cargando" class="text-center py-4">
+    <div class="spinner-border"></div>
+    <div>Cargando turnos...</div>
+  </div>
+
+  <div *ngIf="!cargando && filtrarTurnos().length === 0" class="alert alert-warning mt-3">
+    No hay turnos para los filtros seleccionados.
+  </div>
+
+  <div *ngIf="!cargando && filtrarTurnos().length > 0">
+    <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <th>Especialidad</th>
+          <th>Especialista</th>
+          <th>Paciente</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Estado</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of filtrarTurnos()">
+          <td>{{ t.especialidad }}</td>
+          <td>{{ t.especialista_nombre }}</td>
+          <td>{{ t.paciente_nombre }}</td>
+          <td>{{ t.inicio | date:'yyyy-MM-dd' }}</td>
+          <td>{{ t.inicio | date:'HH:mm' }}</td>
+          <td>
+            <span class="badge"
+                  [ngClass]="{
+                    'bg-success': t.estado === 'Realizado',
+                    'bg-warning': t.estado === 'Solicitado',
+                    'bg-danger': t.estado === 'Cancelado' || t.estado === 'Rechazado',
+                    'bg-info': t.estado === 'Aceptado'
+                  }">{{ t.estado | titlecase }}</span>
+          </td>
+          <td>
+            <button 
+              *ngIf="puedeCancelar(t)" 
+              class="btn btn-sm btn-danger"
+              (click)="seleccionarTurnoParaCancelar(t)">
+              Cancelar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal o div de cancelación -->
+  <div *ngIf="turnoACancelar" class="modal d-block" style="background:rgba(0,0,0,0.4);">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Cancelar turno</h5></div>
+        <div class="modal-body">
+          <div>
+            <label>Motivo de cancelación</label>
+            <textarea [(ngModel)]="comentarioCancelacion" rows="3" class="form-control"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="turnoACancelar = null">Cerrar</button>
+          <button class="btn btn-danger" (click)="confirmarCancelacion()">Cancelar turno</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</div>

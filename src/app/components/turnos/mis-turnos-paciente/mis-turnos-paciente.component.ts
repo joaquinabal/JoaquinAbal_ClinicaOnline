@@ -1,92 +1,131 @@
 import { Component, OnInit } from '@angular/core';
+import { SupabaseService } from '../../../services/supabase.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { SupabaseService } from '../../../services/supabase.service';
-
+import { RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-mis-turnos',
+  selector: 'app-mis-turnos-paciente',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: "./mis-turnos-paciente.component.html"
+  imports: [CommonModule, FormsModule, RouterModule],
+  templateUrl: './mis-turnos-paciente.component.html',
 })
-export class MisTurnosComponent implements OnInit {
+export class MisTurnosPacienteComponent implements OnInit {
   turnos: any[] = [];
+  filtroTurno = '';
   filtroEspecialidad = '';
   filtroEspecialista = '';
   userId: string = '';
+  mensaje: { [turnoId: string]: string } = {};
+  abierto: { [turnoId: string]: string | null } = {};
+  calificacion: { [turnoId: string]: number } = {};
+  comentario: { [turnoId: string]: string } = {};
+  // encuesta: { [turnoId: string]: any } = {}; // Si más adelante la habilitas
+  historiasClinicasMap: { [turnoId: string]: any } = {};
+
 
   constructor(private supabase: SupabaseService) {}
 
   async ngOnInit() {
-    const user = await this.supabase.getUser();
-    if(user){
-      this.userId = user.id;
-    } 
+  const user = await this.supabase.getUser();
+  if (user) {
+    this.userId = user.id;
     this.turnos = await this.supabase.getTurnosPorPaciente(this.userId);
+    const ids = this.turnos.map(t => t.id);
+    // Carga historias clínicas asociadas a estos turnos
+    this.historiasClinicasMap = await this.supabase.getHistoriasDePacienteClinicasPorTurnos(ids);
+  }
+}
+
+ turnosFiltrados() {
+  const f = this.filtroTurno?.toLowerCase() ?? '';
+
+  return this.turnos.filter(turno => {
+    // Búsqueda por campos principales
+    const camposPrincipales = [
+      `especialidad: ${turno.especialidad}`,
+      `especialista: ${turno.nombreEspecialista} ${turno.apellidoEspecialista}`,
+      `estado: ${turno.estado}`,
+      `fecha: ${turno.inicio}`,
+      `hora: ${turno.inicio} ${turno.fin}`,
+      `resena: ${turno.resena}`,
+      `calificacion: ${turno.calificacion}`
+    ].map(x => (x ?? '').toString().toLowerCase());
+
+    // Búsqueda por historia clínica (si existe)
+    let historiaCampos: string[] = [];
+    const historia = this.historiasClinicasMap[turno.id];
+    if (historia) {
+      historiaCampos = [
+        `altura: ${historia.altura}`,
+        `peso: ${historia.peso}`,
+        `temperatura: ${historia.temperatura}`,
+        `presion: ${historia.presion}`,
+        ...(historia.adicionales?.map((ad: any) => `${ad.clave}: ${ad.valor}`) ?? [])
+      ].map(x => (x ?? '').toString().toLowerCase());
+    }
+
+    const allCampos = [...camposPrincipales, ...historiaCampos];
+    return allCampos.some(campo => campo.includes(f));
+  });
+}
+  puedeCancelar(estado: string) {
+    return estado !== 'Realizado' && estado !== 'Cancelado' && estado !== 'Rechazado';
   }
 
-  turnosFiltrados() {
-    return this.turnos.filter(turno => {
-      const coincideEspecialidad = turno.especialidad.toLowerCase().includes(this.filtroEspecialidad.toLowerCase());
-      const nombreCompleto = `${turno.nombreEspecialista} ${turno.apellidoEspecialista}`.toLowerCase();
-      const coincideEspecialista = nombreCompleto.includes(this.filtroEspecialista.toLowerCase());
-      return coincideEspecialidad && coincideEspecialista;
-    });
-  }
-
-  // Visibilidad de acciones
-  puedeCancelar(estado: string): boolean {
-    return estado !== 'Realizado' && estado !== 'Cancelado';
-  }
-
-  puedeVerResena(turno: any): boolean {
-    return turno.resena && turno.resena.trim() !== '';
-  }
-
-  puedeCompletarEncuesta(turno: any): boolean {
-    return turno.estado === 'Realizado' && !turno.encuesta_completada;
-  }
-
-  puedeCalificar(turno: any): boolean {
+  puedeCalificar(turno: any) {
     return turno.estado === 'Realizado' && !turno.calificacion;
   }
 
-  // Acciones (en desarrollo)
-  cancelarTurno(turno: any) {
-    const motivo = prompt('¿Por qué deseas cancelar este turno?');
-    if (motivo) {
-      this.supabase.cancelarTurno(turno.id, motivo).then(() => {
-        turno.estado = 'Cancelado';
-      });
+  puedeCompletarEncuesta(turno: any) {
+    // Siempre retorna true, pero el botón estará disabled
+    return true;
+  }
+
+  puedeVerResena(turno: any) {
+    return !!(turno.resena && turno.resena.trim() !== '');
+  }
+
+  abrirCalificacion(turno: any) {
+    this.abierto[turno.id] = 'calificacion';
+    this.calificacion[turno.id] = 5;
+    this.comentario[turno.id] = '';
+    this.mensaje[turno.id] = '';
+  }
+
+  async enviarCalificacion(turno: any) {
+    if (!this.calificacion[turno.id]) return;
+    // Supón que tienes método en tu service para guardar calificación
+    const ok = await this.supabase.calificarAtencion(turno.id, this.calificacion[turno.id], this.comentario[turno.id]);
+    if (ok) {
+      turno.calificacion = this.calificacion[turno.id];
+      this.abierto[turno.id] = null;
+      this.mensaje[turno.id] = 'Calificación registrada correctamente.';
+    } else {
+      this.mensaje[turno.id] = 'Error al calificar.';
     }
+  }
+
+  cancelarCalificacion(turno: any) {
+    this.abierto[turno.id] = null;
+    this.mensaje[turno.id] = '';
   }
 
   verResena(turno: any) {
-    alert(`Reseña del especialista:\n\n${turno.resena}`);
+    this.abierto[turno.id] = 'resena';
   }
 
-  completarEncuesta(turno: any) {
-    // Lógica para redirigir a encuesta
-    alert('Redirigiendo a encuesta (por implementar)...');
-  }
-
-  calificarAtencion(turno: any) {
-    const comentario = prompt('Deja un comentario sobre la atención recibida:');
-    const puntuacion = prompt('Calificá la atención del 1 al 5:');
-    if (comentario && puntuacion) {
-      this.supabase.calificarTurno(turno.id, comentario, parseInt(puntuacion)).then(() => {
-        turno.calificacion = parseInt(puntuacion);
-      });
-    }
+  cerrarResena(turno: any) {
+    this.abierto[turno.id] = null;
   }
 
   estadoClass(estado: string) {
     switch (estado) {
       case 'Cancelado': return 'text-danger fw-bold';
       case 'Realizado': return 'text-success fw-bold';
-      case 'Pendiente': return 'text-primary fw-bold';
+      case 'Solicitado': return 'text-primary fw-bold';
       case 'Aceptado': return 'text-warning fw-bold';
+      case 'Rechazado': return 'text-muted fw-bold';
       default: return 'text-secondary';
     }
   }

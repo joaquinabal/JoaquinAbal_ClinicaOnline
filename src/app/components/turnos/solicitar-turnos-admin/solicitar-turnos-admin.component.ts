@@ -4,12 +4,15 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   standalone: true,
-  selector: 'app-solicitar-turno',
-  templateUrl: './solicitar-turno.component.html',
-  styleUrls: ['./solicitar-turno.component.css'],
+  selector: 'app-solicitar-turnos-admin',
+  templateUrl: './solicitar-turnos-admin.component.html',
+  styleUrls: ['./solicitar-turnos-admin.component.css'],
   imports: [CommonModule]
 })
-export class SolicitarTurnoComponent implements OnInit {
+export class SolicitarTurnosAdminComponent implements OnInit {
+  pacientes: any[] = [];
+  pacienteSeleccionado: any = null;
+
   especialistas: any[] = [];
   especialistaSeleccionado: any = null;
 
@@ -25,8 +28,18 @@ export class SolicitarTurnoComponent implements OnInit {
 
   async ngOnInit() {
     this.cargando = true;
-    this.especialistas = await this.supabase.getEspecialistasConImagen();
+    this.pacientes = await this.supabase.obtenerPacientes();
     this.cargando = false;
+  }
+
+  async seleccionarPaciente(paciente: any) {
+    this.pacienteSeleccionado = paciente;
+    this.especialistas = await this.supabase.getEspecialistasConImagen();
+    this.especialistaSeleccionado = null;
+    this.especialidades = [];
+    this.especialidadSeleccionada = null;
+    this.turnosDisponibles = [];
+    this.turnoSeleccionado = null;
   }
 
   async seleccionarEspecialista(especialista: any) {
@@ -39,7 +52,6 @@ export class SolicitarTurnoComponent implements OnInit {
 
   async seleccionarEspecialidad(especialidad: string) {
     this.especialidadSeleccionada = especialidad;
-    // Buscar los próximos 15 días con bloques disponibles de 30 min
     this.turnosDisponibles = await this.supabase.getTurnosDisponibles(
       this.especialistaSeleccionado.id,
       this.especialidadSeleccionada
@@ -52,27 +64,24 @@ export class SolicitarTurnoComponent implements OnInit {
   }
 
   async solicitarTurno() {
-    if (!this.turnoSeleccionado || !this.especialistaSeleccionado || !this.especialidadSeleccionada) {
+    if (!this.turnoSeleccionado || !this.especialistaSeleccionado || !this.especialidadSeleccionada || !this.pacienteSeleccionado) {
       alert('Seleccioná todos los datos');
       return;
     }
-    const user = await this.supabase.getUser();
-    if (!user) {
-      alert('Debe estar logueado');
-      return;
-    }
     const turno = {
-      paciente_id: user.id,
+      paciente_id: this.pacienteSeleccionado.id,
       especialista_id: this.especialistaSeleccionado.id,
       especialidad: this.especialidadSeleccionada,
       inicio: this.turnoSeleccionado.inicio,
       fin: this.turnoSeleccionado.fin,
       estado: 'Solicitado',
-      creado_en: new Date().toISOString()
+      creado_en: new Date().toISOString(),
+      administrador_id: null // Si querés podés poner el id del admin logueado
     };
     const ok = await this.supabase.crearTurno(turno);
     if (ok) {
       alert('Turno solicitado correctamente');
+      this.pacienteSeleccionado = null;
       this.especialistaSeleccionado = null;
       this.especialidadSeleccionada = null;
       this.turnosDisponibles = [];

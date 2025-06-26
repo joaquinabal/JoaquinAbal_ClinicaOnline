@@ -13,7 +13,16 @@
         <a class="nav-link" routerLink="">Home</a>
       </li>
       <li *ngIf="user && rol=='paciente'" class="nav-item">
-        <a class="nav-link" routerLink="mis-turnos" routerLinkActive="active">Mis Turnos</a>
+        <a class="nav-link" routerLink="mis-turnos/paciente" routerLinkActive="active">Mis Turnos</a>
+      </li>
+            <li *ngIf="user && rol=='especialista'" class="nav-item">
+        <a class="nav-link" routerLink="mis-turnos/especialista" routerLinkActive="active">Mis Turnos</a>
+      </li>
+        <li *ngIf="user && rol=='especialista'" class="nav-item">
+        <a class="nav-link" routerLink="pacientes" routerLinkActive="active">Pacientes</a>
+      </li>
+        <li *ngIf="user && rol=='administradore'" class="nav-item">
+        <a class="nav-link" routerLink="turnos" routerLinkActive="active">Turnos</a>
       </li>
       <li *ngIf="!user || user==undefined" class="nav-item">
         <a class="nav-link" routerLink="login" routerLinkActive="active">Login</a>
