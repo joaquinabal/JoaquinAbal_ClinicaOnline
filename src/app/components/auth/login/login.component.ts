@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr'; // Para las notificaciones
 import { UserRole } from '../../../services/supabase.service';
 import { LoadingService } from '../../../services/loading.service';
 import { Input } from '@angular/core';
+import { LoginAvatarHoverDirective } from '../../../directives/login-avatar-hover/login-avatar-hover.directive';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -15,13 +16,25 @@ import { Input } from '@angular/core';
   imports: [
     ReactiveFormsModule, // Para trabajar con formularios reactivos
     CommonModule,        // Para directivas como *ngIf, [ngClass]
-    RouterModule         // Para la directiva routerLink
+    RouterModule,         // Para la directiva routerLink
+    LoginAvatarHoverDirective
   ]
 })
 export class LoginComponent implements OnInit {
   @Input() user: any;
   loginForm!: FormGroup;
-  
+  // En LoginComponent
+avatarHoveredIdx: number | null = null;
+avatarRoles = ['Administrador', 'Paciente', 'Paciente', 'Paciente', 'Especialista', 'Especialista'];
+avatarImgs = [
+  { src: '../../../../assets/admin.jpg', email: 'dewiko4920@finfave.com', pwd: '123456' },
+  { src: '../../../../assets/p1.jpg', email: 'rikico9483@ethsms.com', pwd: '123456' },
+  { src: '../../../../assets/p2.jpg', email: 'kacipe3105@ethsms.com', pwd: '123456' },
+  { src: '../../../../assets/p3.jpg', email: 'leraji8751@ethsms.com', pwd: '123456' },
+  { src: '../../../../assets/d1.jpg', email: 'tapaw66345@ethsms.com', pwd: '123456' },
+  { src: '../../../../assets/d2.jpg', email: 'wecelap802@finfave.com', pwd: '123456' },
+];
+
 
   constructor(
     private fb: FormBuilder,
@@ -37,6 +50,11 @@ export class LoginComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
+
+  setAvatarHover(idx: number | null) {
+  this.avatarHoveredIdx = idx;
+}
+
 async login() {
   if (this.loginForm.invalid) {
     this.loginForm.markAllAsTouched();
@@ -68,6 +86,7 @@ async login() {
       // --- Obtiene el rol del usuario
       const userRole: UserRole | undefined = data.user.user_metadata?.['rol'] as UserRole;
 
+      await this.supabaseService.logLogin(data.user);
       if (userRole) {
         let isSpecialistEnabled = true;
         if (userRole === 'especialista') {
@@ -76,14 +95,14 @@ async login() {
           if (specialistError || !specialistData) {
             this.toastr.info('Tu cuenta de especialista aún no ha sido habilitada por un administrador.', 'Cuenta Pendiente');
             await this.supabaseService.signOutUser();
-            this.router.navigate(['/login']);
+            this.router.navigate(['/home']);
             return; // 👈 ACÁ CORTA Y NO MUESTRA EL TOAST DE ÉXITO
           } else {
             isSpecialistEnabled = specialistData.habilitado;
             if (!isSpecialistEnabled) {
               this.toastr.info('Tu cuenta de especialista aún no ha sido habilitada por un administrador.', 'Cuenta Pendiente');
               await this.supabaseService.signOutUser();
-              this.router.navigate(['/login']);
+              this.router.navigate(['/home']);
               return;
             }
           }

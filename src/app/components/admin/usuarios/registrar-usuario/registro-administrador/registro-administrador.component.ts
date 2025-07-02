@@ -4,6 +4,8 @@ import { FormBuilder, Validators, FormGroup, ReactiveFormsModule } from '@angula
 import { SupabaseService } from '../../../../../services/supabase.service';
 import { CommonModule } from '@angular/common';
 import { LoadingService } from '../../../../../services/loading.service';
+import { ToastrService } from 'ngx-toastr';
+
 @Component({
   selector: 'app-registro-administrador',
   standalone: true,
@@ -20,7 +22,8 @@ export class RegistroAdministradorComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private supabaseService: SupabaseService,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private toast: ToastrService
   ) {}
 
   ngOnInit() {
@@ -52,13 +55,13 @@ export class RegistroAdministradorComponent implements OnInit {
     this.loadingService.ocultar();
 
     if (error) {
-      alert('Error en el registro: ' + error.message);
+      this.toast.error('Error en el registro: ' + error.message);
       return;
     }
 
     const uid = data.user?.id;
     if (!uid) {
-      alert('No se pudo obtener el ID del usuario.');
+      this.toast.error('No se pudo obtener el ID del usuario.');
       return;
     }
 
@@ -88,12 +91,12 @@ export class RegistroAdministradorComponent implements OnInit {
     this.loadingService.ocultar();
 
       if (insertRes.error) {
-        alert('Error al guardar el perfil: ' + insertRes.error.message);
+        this.toast.error('Error al guardar el perfil: ' + insertRes.error.message);
       } else {
         this.adminForm.reset();
       }
     } catch (e: any) {
-      alert('Error inesperado: ' + e.message);
+      this.toast.error('Error inesperado: ' + e.message);
     }
   }
 }

@@ -6,7 +6,18 @@
 </div>
 
 
-  <app-registro *ngIf="opcion === 'registrar'" @fadeInOut></app-registro>
-  <app-ver-usuarios *ngIf="opcion === 'ver'" @fadeInOut></app-ver-usuarios>
-  <app-historias-clinicas-admin *ngIf="opcion === 'historia-clinica'" @fadeInOut></app-historias-clinicas-admin>
 
+<!-- Contenedor para "Ver Usuarios" -->
+<div *ngIf="opcion === 'ver'" @slideInOut class="slide-container">
+  <app-ver-usuarios></app-ver-usuarios>
+</div>
+
+<!-- Contenedor para "Registrar Usuarios" -->
+<div *ngIf="opcion === 'registrar'" @slideInOut class="slide-container">
+  <app-registro></app-registro>
+</div>
+
+<!-- Contenedor para "Historias Clínicas" -->
+<div *ngIf="opcion === 'historia-clinica'" @slideInOut class="slide-container">
+  <app-historias-clinicas-admin></app-historias-clinicas-admin>
+</div>

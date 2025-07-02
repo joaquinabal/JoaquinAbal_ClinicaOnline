@@ -9,72 +9,85 @@
 </button>
 
   <!-- Pacientes -->    
-  <h3 class="mb-3">Pacientes</h3>
-  <div class="row border-bottom py-2 fw-bold">
-    <div class="col">Foto</div>
-    <div class="col">Nombre</div>
-    <div class="col">Apellido</div>
-    <div class="col">Edad</div>
-    <div class="col">DNI</div>
-    <div class="col">Email</div>
-    <div class="col">Obra Social</div>
+<!-- Pacientes -->
+<h3 class="mb-3 mt-4">Pacientes</h3>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+  <div class="col" *ngFor="let paciente of pacientes">
+    <div
+      class="card h-100 shadow clickable"
+      [appRolColor]="'paciente'"
+      (click)="descargarExcelTurnos(paciente)"
+    >
+      <img
+        [src]="paciente.imagen1"
+        class="card-img-top p-3 mx-auto"
+        alt="Foto"
+        style="width:150px; height:150px; object-fit:cover;"
+      >
+      <div class="card-body">
+        <h5 class="card-title mb-2">
+          {{ paciente.nombre }} {{ paciente.apellido }}
+        </h5>
+        <p class="card-text mb-1"><strong>Edad:</strong> {{ paciente.edad }}</p>
+        <p class="card-text mb-1"><strong>DNI:</strong> {{ paciente.dni }}</p>
+        <p class="card-text mb-1"><strong>Email:</strong> {{ paciente.mail }}</p>
+        <p class="card-text mb-0"><strong>Obra Social:</strong> {{ paciente.obra_social }}</p>
+      </div>
+    </div>
   </div>
-  <div *ngFor="let paciente of pacientes" class="row border-bottom py-2 align-items-center">
-    <div class="col"><img [src]="paciente.imagen1" alt="Foto" class="img-thumbnail" style="width: 50px;"></div>
-    <div class="col">{{ paciente.nombre }}</div>
-    <div class="col">{{ paciente.apellido }}</div>
-    <div class="col">{{ paciente.edad }}</div>
-    <div class="col">{{ paciente.dni }}</div>
-    <div class="col">{{ paciente.mail }}</div>
-    <div class="col">{{ paciente.obra_social }}</div>
-  </div>
+</div>
+
+
 
   <!-- Especialistas -->
-  <h3 class="mt-5 mb-3">Especialistas</h3>
-  <div class="row border-bottom py-2 fw-bold">
-    <div class="col">Foto</div>
-    <div class="col">Nombre</div>
-    <div class="col">Apellido</div>
-    <div class="col">DNI</div>
-    <div class="col">Edad</div>
-    <div class="col">Email</div>
-    <div class="col">Especialidades</div>
-    <div class="col">Habilitado</div>
-  </div>
-  <div *ngFor="let especialista of especialistas" class="row border-bottom py-2 align-items-center">
-    <div class="col"><img [src]="especialista.imagen1" alt="Foto" class="img-thumbnail" style="width: 50px;"></div>
-    <div class="col">{{ especialista.nombre }}</div>
-    <div class="col">{{ especialista.apellido }}</div>
-    <div class="col">{{ especialista.dni }}</div>
-    <div class="col">{{ especialista.edad }}</div>
-    <div class="col">{{ especialista.mail }}</div>
-    <div *ngFor="let especialidades of especialista.especialidades" class="col">{{especialidades }}</div>
-    <div class="col">
-      <div class="form-check form-switch">
+ <h3 class="mb-3 mt-5">Especialistas</h3>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+  <div class="col" *ngFor="let especialista of especialistas">
+    <div class="card h-100 shadow" [appRolColor]="'especialista'">
+      <img [src]="especialista.imagen1" class="card-img-top p-3 mx-auto" alt="Foto" style="width: 150px; height: 150px; object-fit: cover;">
+      <div class="card-body">
+        <h5 class="card-title mb-2">{{ especialista.nombre }} {{ especialista.apellido }}</h5>
+        <p class="card-text mb-1"><strong>Edad:</strong> {{ especialista.edad }}</p>
+        <p class="card-text mb-1"><strong>DNI:</strong> {{ especialista.dni }}</p>
+        <p class="card-text mb-1"><strong>Email:</strong> {{ especialista.mail }}</p>
+        <p class="card-text mb-1"><strong>Especialidades:</strong> 
+          <span *ngFor="let esp of especialista.especialidades; let last = last">
+            {{ esp }}<span *ngIf="!last">, </span>
+          </span>
+        </p>
+        <div class="col">
+        <p class="card-text mb-0">
+          <strong>Habilitado:</strong>
+          <span class="badge" [ngClass]="especialista.habilitado ? 'bg-success' : 'bg-danger'">
+            {{ especialista.habilitado ? 'Sí' : 'No' }}
+          </span>
+        </p>
+              <div class="form-check form-switch">
         <input class="form-check-input" type="checkbox"
                [checked]="especialista.habilitado"
                (change)="toggleHabilitacion(especialista)">
       </div>
+        </div>
+      </div>
     </div>
   </div>
+</div>
+
 
   <!-- Administradores -->
-  <h3 class="mt-5 mb-3">Administradores</h3>
-  <div class="row border-bottom py-2 fw-bold">
-    <div class="col">Foto</div>
-    <div class="col">Nombre</div>
-    <div class="col">Apellido</div>
-    <div class="col">DNI</div>
-    <div class="col">Edad</div>
-    <div class="col">Email</div>
+  <h3 class="mb-3 mt-5">Administradores</h3>  
+<div class="row row-cols-1 row-cols-md-3 g-4">
+  <div class="col" *ngFor="let admin of administradores">
+    <div class="card h-100 shadow" [appRolColor]="'administrador'">
+      <img [src]="admin.imagen1" class="card-img-top p-3 mx-auto" alt="Foto" style="width: 150px; height: 150px; object-fit: cover;">
+      <div class="card-body">
+        <h5 class="card-title mb-2">{{ admin.nombre }} {{ admin.apellido }}</h5>
+        <p class="card-text mb-1"><strong>Edad:</strong> {{ admin.edad }}</p>
+        <p class="card-text mb-1"><strong>DNI:</strong> {{ admin.dni }}</p>
+        <p class="card-text mb-0"><strong>Email:</strong> {{ admin.mail }}</p>
+      </div>
+    </div>
   </div>
-  <div *ngFor="let admin of administradores" class="row border-bottom py-2 align-items-center">
-    <div class="col"><img [src]="admin.imagen1" alt="Foto" class="img-thumbnail" style="width: 50px;"></div>
-    <div class="col">{{ admin.nombre }}</div>
-    <div class="col">{{ admin.apellido }}</div>
-    <div class="col">{{ admin.dni }}</div>
-    <div class="col">{{ admin.edad }}</div>
-    <div class="col">{{ admin.mail }}</div>
-  </div>
+</div>
 
 </div>

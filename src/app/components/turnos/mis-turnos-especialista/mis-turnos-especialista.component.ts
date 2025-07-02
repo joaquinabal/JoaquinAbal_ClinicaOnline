@@ -3,11 +3,13 @@
   import { ToastrService } from 'ngx-toastr';
   import { CommonModule } from '@angular/common';
   import { FormsModule } from '@angular/forms';
+import { AmPmPipe } from '../../../pipes/ampm/ampm.pipe';
+import { FechaPipe } from '../../../pipes/fechaEspañol/fecha-español.pipe';
 
   @Component({
     selector: 'app-mis-turnos-especialista',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, AmPmPipe, FechaPipe],
     templateUrl: './mis-turnos-especialista.component.html',
   })
   export class MisTurnosEspecialistaComponent implements OnInit {

@@ -5,6 +5,8 @@ import { FormBuilder, FormGroup, Validators, FormControl, ReactiveFormsModule, F
 import { LoadingService } from '../../../services/loading.service';
 import { Router } from '@angular/router';
 import { RecaptchaModule } from 'ng-recaptcha';
+import { ToastrService } from 'ngx-toastr';
+
 @Component({
   selector: 'app-registro-especialista',
   standalone: true,
@@ -22,7 +24,7 @@ especialidadesSeleccionadas: string[] = [];
   captchaResuelto: string | null = null;
 
 
-  constructor(private router: Router, private fb: FormBuilder, private supabaseService: SupabaseService, private loadingService: LoadingService) {
+  constructor(private router: Router, private fb: FormBuilder, private supabaseService: SupabaseService, private loadingService: LoadingService, private toastr: ToastrService) {
     this.especialistaForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(2)]],
       apellido: ['', [Validators.required, Validators.minLength(2)]],
@@ -55,7 +57,7 @@ return;
 
   const yaExiste = this.especialidadesDisponibles.find(e => e.toLowerCase() === nueva.toLowerCase());
   if (yaExiste) {
-    alert('La especialidad ya existe.');
+    this.toastr.error('La especialidad ya existe.');
     return;
   }
   this.loadingService.mostrar()
@@ -63,7 +65,7 @@ return;
   this.loadingService.ocultar()
   if (error) {
     console.log(error)
-    alert('No se pudo agregar la especialidad.');
+    this.toastr.error('No se pudo agregar la especialidad.');
     return;
   } else {
     console.log("si se pudo")
@@ -103,7 +105,7 @@ return;
   }
 
     if (!this.captchaResuelto) {
-    alert('Por favor resolvé el captcha.');
+    this.toastr.error('Por favor resolvé el captcha.');
     return;
   }
 
@@ -116,7 +118,7 @@ return;
         this.router.navigate(['/home']);
 
   if (error) {
-    alert('Error en el registro: ' + error.message);
+    this.toastr.error('Error en el registro: ' + error.message);
     return;
   }
 
@@ -148,9 +150,9 @@ return;
   const insertRes = await this.supabaseService.insertEspecialista(especialista);
     this.loadingService.ocultar();
   if (insertRes.error) {
-    alert('Error al guardar el perfil: ' + insertRes.error.message);
+    this.toastr.error('Error al guardar el perfil: ' + insertRes.error.message);
   } else {
-    alert('Registro exitoso. Verificá tu mail y aguardá aprobación del administrador.');
+    this.toastr.success('Registro exitoso. Verificá tu mail y aguardá aprobación del administrador.');
     this.especialistaForm.reset();
   }
   

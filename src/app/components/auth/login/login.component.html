@@ -46,38 +46,35 @@
 
             <div class="text-center mt-3">
               <p>¿No tienes cuenta? <a routerLink="/registro">Regístrate aquí</a></p>
-              <p><a href="#">¿Olvidaste tu contraseña?</a></p>
             </div>
           </form>
         </div>
       </div>
 
-      <div class="col-12 col-md-auto d-flex flex-column justify-content-center align-items-center ms-md-4">
-<button class="btn btn-info rounded-3 mb-2" style="width: 70px; height: 70px; padding: 0; overflow: hidden;"(click)="autocompletarCredenciales('dewiko4920@finfave.com', '123456')">
-  <img src="../../../../assets/admin.jpg" alt="Admin" style="width: 100%; height: 100%; object-fit: cover;" />
-</button>
+<div class="col-12 col-md-auto d-flex flex-column justify-content-center align-items-center ms-md-4 position-relative">
+  <ng-container *ngFor="let avatar of avatarImgs; let idx = index">
+    <button
+      class="btn btn-info rounded-3 mb-2 position-relative"
+      style="width: 70px; height: 70px; padding: 0; overflow: hidden; transition: filter 0.2s;"
+      (click)="autocompletarCredenciales(avatar.email, avatar.pwd)"
+      [style.filter]="(avatarHoveredIdx !== null && avatarHoveredIdx !== idx) ? 'grayscale(1)' : 'none'"
+      [loginAvatarHover]="idx"
+      [hoveredIdx]="avatarHoveredIdx"
+      [setCurrentHover]="setAvatarHover.bind(this)"
+    >
+      <img [src]="avatar.src" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;" />
+      <!-- Texto del rol al costado (fuera del botón) -->
+      <span
+        *ngIf="avatarHoveredIdx === idx"
+        class="badge bg-primary position-absolute top-50 start-100 translate-middle-y ms-2"
+        style="font-size: 1rem; z-index: 2;"
+      >
+        {{ avatarRoles[idx] }}
+      </span>
+    </button>
+  </ng-container>
+</div>
 
-<button class="btn btn-info rounded-3 mb-2" style="width: 70px; height: 70px; padding: 0; overflow: hidden;"(click)="autocompletarCredenciales('rikico9483@ethsms.com', '123456')">
-  <img src="../../../../assets/p1.jpg" alt="P1" style="width: 100%; height: 100%; object-fit: cover;" />
-</button>
-
-<button class="btn btn-info rounded-3 mb-2" style="width: 70px; height: 70px; padding: 0; overflow: hidden;"(click)="autocompletarCredenciales('kacipe3105@ethsms.com', '123456')">
-  <img src="../../../../assets/p2.jpg" alt="P2" style="width: 100%; height: 100%; object-fit: cover;" />
-</button>
-
-<button class="btn btn-info rounded-3 mb-2" style="width: 70px; height: 70px; padding: 0; overflow: hidden;"(click)="autocompletarCredenciales('leraji8751@ethsms.com', '123456')">
-  <img src="../../../../assets/p3.jpg" alt="P3" style="width: 100%; height: 100%; object-fit: cover;" />
-</button>
-
-<button class="btn btn-info rounded-3 mb-2" style="width: 70px; height: 70px; padding: 0; overflow: hidden;"(click)="autocompletarCredenciales('tapaw66345@ethsms.com', '123456')">
-  <img src="../../../../assets/d1.jpg" alt="D1" style="width: 100%; height: 100%; object-fit: cover;" />
-</button>
-
-<button class="btn btn-info rounded-3 mb-2" style="width: 70px; height: 70px; padding: 0; overflow: hidden;"(click)="autocompletarCredenciales('wecelap802@finfave.com', '123456')">
-  <img src="../../../../assets/d2.jpg" alt="D2" style="width: 100%; height: 100%; object-fit: cover;" />
-</button>
-
-      </div>
     </div>
   </div>
 </div>

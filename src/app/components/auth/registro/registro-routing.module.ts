@@ -1,24 +1,27 @@
+// src/app/components/auth/registro/registro-routing.module.ts
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { RegistroComponent } from './registro.component';
 import { RegistroPacienteComponent } from '../registro-paciente/registro-paciente.component';
 import { RegistroEspecialistaComponent } from '../registro-especialista/registro-especialista.component';
-const routes: Routes = [
-  { path: '', component: RegistroComponent},
-  { path: 'paciente', component: RegistroPacienteComponent },
-  { path: 'especialista', component: RegistroEspecialistaComponent }
-   ,
 
+
+const routes: Routes = [
+  {
+    path: '',
+    component: RegistroComponent,
+    data: { childAnimation: 'Main' }
+  },
   {
     path: 'paciente',
-    loadComponent: () => import('../registro-paciente/registro-paciente.component')
-      .then(m => m.RegistroPacienteComponent)
+    component: RegistroPacienteComponent,
+    data: { childAnimation: 'paciente' }
   },
   {
     path: 'especialista',
-    loadComponent: () => import('../registro-especialista/registro-especialista.component')
-      .then(m => m.RegistroEspecialistaComponent)
+    component: RegistroEspecialistaComponent,
+    data: { childAnimation: 'especialista' }
   }
 ];
 

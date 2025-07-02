@@ -1,27 +1,58 @@
+<!-- src/app/components/pacientes/pacientes.component.html -->
 <div class="container mt-4">
-  <h3>Pacientes Atendidos y su Historia Clínica</h3>
+  <h3 class="mb-4">Pacientes Atendidos</h3>
 
-  <div *ngIf="historiasClinicas.length === 0" class="alert alert-info">
-    No hay historias clínicas para mostrar.
+  <div *ngIf="pacientesCards.length === 0" class="alert alert-info">
+    No hay pacientes atendidos todavía.
   </div>
 
-  <div *ngFor="let historia of historiasClinicas" class="card mb-3">
-    <div class="card-body">
-      <h5>
-        Paciente: {{ historia.pacientes?.nombre }} {{ historia.pacientes?.apellido }}
-      </h5>
-      <p><strong>Fecha:</strong> {{ historia.creado_en | date:'short' }}</p>
-      <p><strong>Altura:</strong> {{ historia.altura }} cm</p>
-      <p><strong>Peso:</strong> {{ historia.peso }} kg</p>
-      <p><strong>Temperatura:</strong> {{ historia.temperatura }} °C</p>
-      <p><strong>Presión:</strong> {{ historia.presion }}</p>
-      <div *ngIf="historia.adicionales?.length > 0">
-        <strong>Otros datos:</strong>
-        <ul>
-          <li *ngFor="let ad of historia.adicionales">
-            {{ ad.clave }}: {{ ad.valor }}
-          </li>
-        </ul>
+  <div class="row g-4 lign-items-start">
+    <div *ngFor="let p of pacientesCards" class="col-12 col-md-4 col-lg-3">
+      <div class="card shadow-sm">
+        <img [src]="p.foto" class="card-img-top" alt="Foto de {{ p.nombre }}">  
+        <div class="card-body">
+          <h5 class="card-title">{{ p.nombre }} {{ p.apellido }}</h5>
+
+          <p class="card-subtitle mb-2 text-muted">Últimos 3 turnos:</p>
+          <ul class="list-unstyled mb-0">
+            <li *ngFor="let turno of p.ultimosTurnos">
+              <i class="bi bi-calendar2-check me-1"></i>
+              {{ turno | fechaEspanol }} {{ turno | ampm }}
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-footer bg-white">
+          <button 
+            class="btn btn-outline-primary w-100 mb-2"
+            (click)="toggleHistoria(p.pacienteId)"
+          >
+            {{ expandedId === p.pacienteId ? 'Ocultar Historia Clínica' : 'Ver Historia Clínica' }}
+          </button>
+
+          <div *ngIf="expandedId === p.pacienteId">
+            <ng-container *ngIf="historiasMap[p.pacienteId]?.length; else sinHist">
+              <div *ngFor="let h of historiasMap[p.pacienteId]" class="border-top pt-2 mb-2">
+                <p class="mb-1"><strong>Fecha:</strong> {{ h.creado_en | fechaEspanol }}</p>
+                <p class="mb-1"><strong>Altura:</strong> {{ h.altura }} cm</p>
+                <p class="mb-1"><strong>Peso:</strong> {{ h.peso }} kg</p>
+                <p class="mb-1"><strong>Temp.:</strong> {{ h.temperatura }} °C</p>
+                <p class="mb-1"><strong>Presión:</strong> {{ h.presion }}</p>
+                <div *ngIf="h.adicionales?.length">
+                  <strong>Otros datos:</strong>
+                  <ul class="mb-0">
+                    <li *ngFor="let ad of h.adicionales">
+                      {{ ad.clave }}: {{ ad.valor }}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </ng-container>
+            <ng-template #sinHist>
+              <p class="text-muted mb-0">No hay historia clínica registrada.</p>
+            </ng-template>
+          </div>
+        </div>
       </div>
     </div>
   </div>

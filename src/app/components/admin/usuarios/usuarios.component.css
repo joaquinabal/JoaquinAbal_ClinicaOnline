@@ -1,0 +1,7 @@
+.slide-container {
+  /* Asegura que ocupe todo el espacio disponible */
+  display: block;
+  width: 100%;
+  /* Oculta el contenido que se sale al hacer translate */
+  overflow: hidden;
+}

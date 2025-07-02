@@ -62,7 +62,8 @@ export const routes: Routes = [
    },
   {
     path: 'registro',
-    loadChildren: () => import('./components/auth/registro/registro.module').then(m => m.RegistroModule)
+    loadChildren: () => import('./components/auth/registro/registro.module').then(m => m.RegistroModule),
+        data: { animation: 'Registro' }
   },
   { path: '**', redirectTo: '' }
 ];

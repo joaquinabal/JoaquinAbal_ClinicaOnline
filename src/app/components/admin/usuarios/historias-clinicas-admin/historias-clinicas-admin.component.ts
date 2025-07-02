@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { SupabaseService } from '../../../../services/supabase.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AmPmPipe } from '../../../../pipes/ampm/ampm.pipe';
 
 @Component({
   selector: 'app-historias-clinicas-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AmPmPipe],
   templateUrl: './historias-clinicas-admin.component.html'
 })
 export class HistoriasClinicasAdminComponent implements OnInit {

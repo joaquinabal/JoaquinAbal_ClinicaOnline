@@ -16,7 +16,7 @@
         <br>
         Especialista: {{ historia.especialistas?.nombre }} {{ historia.especialistas?.apellido }}
       </h5>
-      <p><strong>Fecha:</strong> {{ historia.creado_en | date:'short' }}</p>
+      <p><strong>Fecha:</strong> {{ historia.creado_en | date:'dd-MM-yyyy' }} | {{ historia.creado_en | ampm }}</p>
       <p><strong>Altura:</strong> {{ historia.altura }} cm</p>
       <p><strong>Peso:</strong> {{ historia.peso }} kg</p>
       <p><strong>Temperatura:</strong> {{ historia.temperatura }} °C</p>

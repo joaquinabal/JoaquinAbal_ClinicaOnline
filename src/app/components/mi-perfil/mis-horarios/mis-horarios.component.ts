@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SupabaseService } from '../../../services/supabase.service';
 import { LoadingService } from '../../../services/loading.service';
+import { ToastrService } from 'ngx-toastr';
+
 
 @Component({
   selector: 'app-mis-horarios',
@@ -25,7 +27,7 @@ export class MisHorariosComponent implements OnInit {
   horaFinSeleccionada: string | null = null;
   horarios: string[] = [];
 
-  constructor(private supabase: SupabaseService, private loadingService: LoadingService) {}
+  constructor(private supabase: SupabaseService, private loadingService: LoadingService,   private toastr: ToastrService,) {}
 
   async ngOnInit() {
     this.generarHorarios();
@@ -52,7 +54,8 @@ export class MisHorariosComponent implements OnInit {
 
   async guardarDisponibilidad() {
     if (!this.especialidadSeleccionada || !this.diaSeleccionado || !this.horaInicioSeleccionada || !this.horaFinSeleccionada) {
-      return alert('Completa todos los campos');
+      this.toastr.error("Completa todos los campos.");
+      return
     }
 
     // Verifica que inicio < fin

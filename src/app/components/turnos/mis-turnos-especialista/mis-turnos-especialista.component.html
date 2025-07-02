@@ -12,8 +12,8 @@
     <div class="card-body">
       <h5 class="card-title">{{ turno.especialidad }} - {{ turno.nombrePaciente }} {{ turno.apellidoPaciente }}</h5>
       <p class="card-text">
-        <strong>Fecha:</strong> {{ turno.inicio | date:'fullDate' }}<br>
-        <strong>Hora:</strong> {{ turno.inicio | date:'shortTime' }} - {{ turno.fin | date:'shortTime' }}<br>
+        <strong>Fecha:</strong> {{ turno.inicio | fechaEspanol }}<br>
+        <strong>Hora:</strong> {{ turno.inicio | ampm }} - {{ turno.fin | ampm }}<br>
         <strong>Estado:</strong> <span [ngClass]="estadoClass(turno.estado)">{{ turno.estado }}</span>
       </p>
 

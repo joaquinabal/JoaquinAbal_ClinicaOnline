@@ -13,17 +13,18 @@ import { trigger, transition, style, animate } from '@angular/animations';
   templateUrl: './usuarios.component.html',
   styleUrl: './usuarios.component.css',
   animations: [
-    trigger('fadeInOut', [
-      transition(':enter', [
-        style({ opacity: 0 }),
-        animate('400ms', style({ opacity: 1 }))
-      ]),
-      transition(':leave', [
-        animate('400ms', style({ opacity: 0 }))
-      ])
-    ])
-  ]
-})
+     trigger('slideInOut', [
+  // Al entrar: desde -100% (izquierda) a 0
+  transition(':enter', [
+    style({ transform: 'translateX(-100%)', opacity: 0 }),
+    animate('800ms ease-out', style({ transform: 'translateX(0)', opacity: 1 }))
+  ]),
+  // Al salir: de 0 a +100% (derecha)
+  transition(':leave', [
+    animate('800ms ease-in', style({ transform: 'translateX(100%)', opacity: 0 }))
+  ])
+])]
+})  
 export class UsuariosComponent {
  opcion: 'ver' | 'registrar' | 'historia-clinica' | null = null;
 }

@@ -23,6 +23,28 @@ Incluye autenticación, manejo de roles, registro de usuarios, gestión de turno
 
 ## 📸 Screenshots
 
+- **HOME**
+![alt text](src/assets/readme/home.PNG)
+
+- **REGISTROS**
+![alt text](src/assets/readme/register.PNG)
+![alt text](src/assets/readme/registerEsp.PNG)
+![alt text](src/assets/readme/registerPac.PNG)
+
+- **LOGIN**
+![alt text](src/assets/readme/login.PNG)
+
+- **Mi Perfil - Pacientes**
+![alt text](src/assets/readme/miperfilPac.PNG)
+
+- **Solicitar Turno**
+![alt text](src/assets/readme/solicturnopac.PNG)
+
+- **Ver Historias Clínicas**
+![alt text](src/assets/readme/verhistclin.PNG)
+
+- **Ver Usuarios**
+![alt text](src/assets/readme/verusuarios.PNG)
 
 ## ⚙️ Funcionalidades principales
 

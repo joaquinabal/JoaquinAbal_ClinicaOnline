@@ -1,23 +1,85 @@
 <div class="container my-4">
   <h2 class="mb-4">Mi Perfil</h2>
 
-  <div *ngIf="dataUsuario; else cargando">
+  <div *ngIf="dataUsuario;">
     <ul class="list-group">
-         <div class="col"><img [src]="dataUsuario.imagen1" alt="Foto" class="img-thumbnail" style="width: 150px;"></div>
-        <div class="col"><img [src]="dataUsuario.imagen2" alt="Foto" class="img-thumbnail" style="width: 150px;"></div>
-         <li class="list-group-item"><strong>Nombre:</strong> {{ dataUsuario.nombre }}</li>
-      <li class="list-group-item"><strong>Apellido:</strong> {{ dataUsuario.apellido }}</li>
-            <li class="list-group-item"><strong>Edad:</strong> {{ dataUsuario.edad }}</li>
-      <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
-      <li class="list-group-item"><strong>Rol:</strong> {{ rol | titlecase }}</li>
-    </ul>
+  <div class="row mb-3">
+    <div class="col-auto">
+      <img [src]="dataUsuario.imagen1" alt="Foto" class="img-thumbnail" style="width: 150px;">
+    </div>
+    <div *ngIf="rol === 'paciente'" class="col-auto">
+      <img [src]="dataUsuario.imagen2" alt="Foto" class="img-thumbnail" style="width: 150px;">
+    </div>
+  </div>
+
+  
+
+  <li 
+    class="list-group-item"
+    [appPerfilHover]="rol || ''"  >
+    <strong>Nombre:</strong> {{ dataUsuario.nombre }}
+  </li>
+  <li 
+    class="list-group-item"
+    [appPerfilHover]="rol || ''">
+    <strong>Apellido:</strong> {{ dataUsuario.apellido }}
+  </li>
+    <li 
+    class="list-group-item"
+    [appPerfilHover]="rol || ''">
+    <strong>DNI:</strong> {{ dataUsuario.dni  | dniFormat }}
+  </li>
+  <li 
+    class="list-group-item"
+    [appPerfilHover]="rol || ''">
+    <strong>Edad:</strong> {{ dataUsuario.edad }}
+  </li>
+  <li 
+    class="list-group-item"
+    [appPerfilHover]="rol || ''">
+    <strong>Email:</strong> {{ user.email }}
+  </li>
+    <li 
+    class="list-group-item"
+    *ngIf="rol === 'paciente'"
+    [appPerfilHover]="rol || ''">
+    <strong>Obra Social:</strong> {{ dataUsuario.obra_social | capitalize }}
+  </li>
+  <li 
+    class="list-group-item"
+    [appPerfilHover]="rol || ''">
+    <strong>Rol:</strong> {{ rol | titlecase }}
+  </li> 
+</ul>
+  
 
     <div *ngIf="rol === 'especialista'" class="mt-4">
       <a routerLink='/mis-horarios' class="btn btn-primary">Mis Horarios</a>
     </div>
   </div>
 
-  <div class="card mt-4">
+
+  <div *ngIf="rol === 'paciente'" class="card mt-4">
+  <div class="card-header">Mi Historia Clínica</div>
+  <div class="card-body">
+    <div class="row g-2 align-items-center mb-3">
+      <label class="col-auto mb-0">Especialidad:</label>
+      <div class="col-auto">
+        <select class="form-select" [(ngModel)]="selectedEspecialidad">
+          <option *ngFor="let esp of especialidadesConTodas" [value]="esp">
+            {{ esp }}
+          </option>
+        </select>
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-primary" (click)="descargarPdfHistoria()">
+          Descargar PDF
+        </button>
+      </div>
+    </div>
+
+    
+  <div *ngIf="rol=='paciente'" class="card mt-4">
   <div class="card-header">Mi Historia Clínica</div>
   <div class="card-body" *ngIf="historias.length > 0; else sinHistoria">
     <div *ngFor="let h of historias" class="mb-4 border-bottom pb-2">
@@ -38,6 +100,10 @@
     <p class="text-muted">No se encontraron historias clínicas.</p>
   </ng-template>
 </div>
+
+
+
+
 
   <ng-template #cargando>
     <div class="alert alert-info">Cargando perfil...</div>

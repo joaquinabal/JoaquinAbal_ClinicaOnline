@@ -39,7 +39,7 @@
       <div class="fw-bold">{{ esp }}</div>
     </div>
     <img 
-      [src]="'assets/' + esp.toLowerCase() + '.png'" 
+      [src]="'assets/' + esp.toLowerCase().substring(0,2) + '.png'" 
       onerror="this.src='assets/default.jpg'" 
       style="width: 48px; height: 48px; object-fit: contain;" 
       alt="Especialidad"
@@ -59,17 +59,22 @@
     <h5 class="text-center mb-3">
       Turnos disponibles para {{ especialistaSeleccionado.nombre }} ({{ especialidadSeleccionada }})
     </h5>
-    <div class="row g-3 justify-content-center">
-      <div *ngFor="let t of turnosDisponibles" class="col-6 col-md-3">
-        <button 
-          class="btn btn-outline-success w-100 p-3"
-          [class.active]="turnoSeleccionado === t"
-          (click)="seleccionarTurno(t)"
-        >
-          {{ t.inicio | date:'yyyy-MM-dd HH:mm' }}
-        </button>
-      </div>
-    </div>
+  <!-- En el paso 3: Seleccionar Turno -->
+<div class="row g-3 justify-content-center">
+  <div *ngFor="let t of turnosDisponibles" class="col-6 col-md-3">
+<button 
+  class="btn btn-outline-success w-100 p-3"
+  [class.active]="turnoSeleccionado === t"
+  [disabled]="t.ocupado"
+  (click)="seleccionarTurno(t)">
+  {{ t.inicio | date:'dd-MM-yyyy' }}
+        {{ t.inicio | ampm }}
+  <span *ngIf="t.ocupado" class="text-danger small d-block">Ocupado</span>
+</button>
+
+  </div>
+</div>
+
     <div class="text-center mt-4">
       <button class="btn btn-secondary me-2" (click)="especialidadSeleccionada = null">Volver</button>
       <button class="btn btn-primary" (click)="solicitarTurno()" [disabled]="!turnoSeleccionado">Confirmar Turno</button>

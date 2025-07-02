@@ -4,6 +4,8 @@ import { SupabaseService } from '../../../services/supabase.service';
 import { CommonModule } from '@angular/common';
 import { LoadingService } from '../../../services/loading.service';
 import { RecaptchaModule } from 'ng-recaptcha';
+import { ToastrService } from 'ngx-toastr';
+
 @Component({
   selector: 'app-registro-paciente',
   standalone: true,
@@ -21,7 +23,8 @@ export class RegistroPacienteComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private supabaseService: SupabaseService,
-    private loadinService: LoadingService
+    private loadinService: LoadingService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit() {
@@ -64,14 +67,14 @@ export class RegistroPacienteComponent implements OnInit {
     const { data, error } = await this.supabaseService.signUpUser(form.mail!, form.password!, 'paciente');
           this.loadinService.ocultar()
     if (error) {
-      alert('Error en el registro: ' + error.message);
+      this.toastr.error('Error en el registro: ' + error.message);
       this.cargando = false;
       return;
     }
 
     const uid = data.user?.id;
     if (!uid) {
-      alert('No se pudo obtener el ID del usuario.');
+      this.toastr.error('No se pudo obtener el ID del usuario.');
       this.cargando = false;
       return;
     }
@@ -111,13 +114,13 @@ const imgUrl2 = "";*/
 
       const insertRes = await this.supabaseService.insertPaciente(paciente);
       if (insertRes.error) {
-        alert('Error al guardar el perfil: ' + insertRes.error.message);
+        this.toastr.error('Error al guardar el perfil: ' + insertRes.error.message);
       } else {
         
         this.pacienteForm.reset();
       }
     } catch (e: any) {
-      alert('Error inesperado: ' + e.message);
+      this.toastr.error('Error inesperado: ' + e.message);
     } finally {
 
     }

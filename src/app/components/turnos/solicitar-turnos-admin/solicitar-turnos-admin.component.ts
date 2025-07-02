@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { SupabaseService } from '../../../services/supabase.service';
 import { CommonModule } from '@angular/common';
+import { AmPmPipe } from '../../../pipes/ampm/ampm.pipe';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   standalone: true,
   selector: 'app-solicitar-turnos-admin',
   templateUrl: './solicitar-turnos-admin.component.html',
   styleUrls: ['./solicitar-turnos-admin.component.css'],
-  imports: [CommonModule]
+  imports: [CommonModule, AmPmPipe]
 })
 export class SolicitarTurnosAdminComponent implements OnInit {
   pacientes: any[] = [];
@@ -24,7 +26,7 @@ export class SolicitarTurnosAdminComponent implements OnInit {
 
   cargando = false;
 
-  constructor(private supabase: SupabaseService) {}
+  constructor(private supabase: SupabaseService, private toastr: ToastrService) {}
 
   async ngOnInit() {
     this.cargando = true;
@@ -65,7 +67,7 @@ export class SolicitarTurnosAdminComponent implements OnInit {
 
   async solicitarTurno() {
     if (!this.turnoSeleccionado || !this.especialistaSeleccionado || !this.especialidadSeleccionada || !this.pacienteSeleccionado) {
-      alert('Seleccioná todos los datos');
+      this.toastr.error('Seleccioná todos los datos');
       return;
     }
     const turno = {
@@ -80,14 +82,14 @@ export class SolicitarTurnosAdminComponent implements OnInit {
     };
     const ok = await this.supabase.crearTurno(turno);
     if (ok) {
-      alert('Turno solicitado correctamente');
+      this.toastr.success('Turno solicitado correctamente');
       this.pacienteSeleccionado = null;
       this.especialistaSeleccionado = null;
       this.especialidadSeleccionada = null;
       this.turnosDisponibles = [];
       this.turnoSeleccionado = null;
     } else {
-      alert('Error al solicitar turno');
+      this.toastr.error('Error al solicitar turno');
     }
   }
 }

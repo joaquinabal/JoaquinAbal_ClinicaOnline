@@ -54,8 +54,8 @@
           <td>{{ t.especialidad }}</td>
           <td>{{ t.especialista_nombre }}</td>
           <td>{{ t.paciente_nombre }}</td>
-          <td>{{ t.inicio | date:'yyyy-MM-dd' }}</td>
-          <td>{{ t.inicio | date:'HH:mm' }}</td>
+          <td>{{ t.inicio | fechaEspanol }}</td>
+          <td>{{ t.inicio | ampm }}</td>
           <td>
             <span class="badge"
                   [ngClass]="{
@@ -97,4 +97,115 @@
     </div>
   </div>
   
+
+ <hr>
+
+
+  <h2 class="mb-4 text-center">Descargar Informes</h2>
+  <div class="container py-4"></div>
+<!-- Selector de reporte -->
+<select [(ngModel)]="reporteSeleccionado">
+  <option [ngValue]="'log'">Log Ingresos</option>
+  <option [ngValue]="'porEspecialidad'">Por Especialidad</option>
+  <option [ngValue]="'porDia'">Por Día</option>
+  <option [ngValue]="'solicitudesMedico'">Solicitudes por Médico</option>
+  <option [ngValue]="'finalizadosMedico'">Finalizados por Médico</option>
+</select>
+
+<!-- Fechas sólo para los dos últimos -->
+<div *ngIf="reporteSeleccionado==='solicitudesMedico' || reporteSeleccionado==='finalizadosMedico'">
+  <input type="date" [(ngModel)]="fechaDesde">
+  <input type="date" [(ngModel)]="fechaHasta">
 </div>
+
+<!-- Botones de descarga -->
+<button
+  class="btn btn-outline-success me-2"
+  *ngIf="reporteSeleccionado==='log'"
+  (click)="downloadExcelLoginLogs()">
+  Excel
+</button>
+<button
+  class="btn btn-outline-primary me-2"
+  *ngIf="reporteSeleccionado==='log'"
+  (click)="downloadPdfLoginLogs()">
+  PDF
+</button>
+
+<button
+  class="btn btn-outline-success me-2"
+  *ngIf="reporteSeleccionado==='porEspecialidad'"
+  (click)="downloadExcelTurnosPorEspecialidad()">
+  Excel 
+</button>
+<button
+  class="btn btn-outline-primary me-2"
+  *ngIf="reporteSeleccionado==='porEspecialidad'"
+  (click)="downloadPdfTurnosPorEspecialidad()">
+  PDF
+</button>
+
+<button
+  class="btn btn-outline-success me-2"
+  *ngIf="reporteSeleccionado==='porDia'"
+  (click)="downloadExcelTurnosPorDia()">
+  Excel 
+</button>
+<button
+  class="btn btn-outline-primary me-2"
+  *ngIf="reporteSeleccionado==='porDia'"
+  (click)="downloadPdfTurnosPorDia()">
+  PDF 
+</button>
+
+<button
+  class="btn btn-outline-success me-2"
+  *ngIf="reporteSeleccionado==='solicitudesMedico'"
+  (click)="downloadExcelTurnosPorMedico('Solicitado', fechaDesde, fechaHasta)">
+  Excel 
+</button>
+<button
+  class="btn btn-outline-primary me-2"
+  *ngIf="reporteSeleccionado==='solicitudesMedico'"
+  (click)="downloadPdfTurnosPorMedico('Solicitado', fechaDesde, fechaHasta)">
+  PDF
+</button>
+
+<button
+  class="btn btn-outline-success me-2"
+  *ngIf="reporteSeleccionado==='finalizadosMedico'"
+  (click)="downloadExcelTurnosPorMedico('Realizado', fechaDesde, fechaHasta)">
+  Excel
+</button>
+<button
+  class="btn btn-outline-primary me-2"
+  *ngIf="reporteSeleccionado==='finalizadosMedico'"
+  (click)="downloadPdfTurnosPorMedico('Realizado', fechaDesde, fechaHasta)">
+  PDF 
+</button>
+
+
+<!-- oculto pero aún participando en el layout -->
+<canvas 
+  #userChart
+  width="600" 
+  height="400" 
+  style="visibility:hidden; width:600px; height:400px;"
+></canvas>
+<canvas #especialidadChart width="600" 
+  height="400" 
+  style="visibility:hidden; width:600px; height:400px;"></canvas>
+<canvas #diaChart            width="600" 
+  height="400" 
+  style="visibility:hidden; width:600px; height:400px;"></canvas>
+<canvas #medSolicChart       width="600" 
+  height="400" 
+  style="visibility:hidden; width:600px; height:400px;"></canvas>
+<canvas #medFinalChart       width="600" 
+  height="400" 
+  style="visibility:hidden; width:600px; height:400px;"></canvas>
+
+
+</div>
+
+  
